@@ -37,6 +37,56 @@
           background-color: #ef4444;
         }
       }
+      .timeline-container {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 10px;
+        display: flex;
+      }
+      .timeline-column {
+        display: inline-block;
+        margin-right: 4px;
+        vertical-align: top;
+      }
+      .timeline-header {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 4px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .timeline-frame {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .timeline-frame.active {
+        border: 2px solid #2563eb;
+      }
+      .frame-label {
+        font-weight: bold;
+        text-align: center;
+        width: 45px;
+        margin-bottom: 4px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .label-column {
+        position: sticky;
+        left: 0;
+        background-color: white;
+        z-index: 10;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      }
     </style>
   </head>
   <body class="bg-gray-100 min-h-screen flex flex-col items-center p-8">
@@ -51,6 +101,13 @@
           replacing the oldest page in memory when a new page needs to be loaded
           and there's no free frame available.
         </p>
+      </div>
+
+      <div class="mt-8 mb-8">
+        <h2 class="text-xl font-semibold mb-4">FIFO Visualization Timeline</h2>
+        <div class="timeline-container" id="timeline-container">
+          <!-- we will be generating the timeline here -->
+        </div>
       </div>
 
       <div class="flex flex-col md:flex-row gap-8">
@@ -78,7 +135,7 @@
             <input
               id="page-sequence"
               type="text"
-              value="1,2,3,4,1,2,5,1,2,3,4,5"
+              value="7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7,0,1"
               class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p class="text-sm text-gray-500 mt-1">
@@ -122,7 +179,7 @@
         </div>
 
         <div class="w-full md:w-1/2">
-          <h2 class="text-xl font-semibold mb-4">Visualization</h2>
+          <h2 class="text-xl font-semibold mb-4">Current State</h2>
 
           <div class="mb-4">
             <h3 class="text-lg font-medium mb-2">Memory Frames</h3>
@@ -160,11 +217,6 @@
           </div>
         </div>
       </div>
-
-      <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">Sequence Progress</h2>
-        <div id="sequence-container" class="flex flex-wrap gap-2"></div>
-      </div>
     </div>
 
     <script>
@@ -180,7 +232,7 @@
         const pageHitsEl = document.getElementById("page-hits");
         const hitRatioEl = document.getElementById("hit-ratio");
         const failRatioEl = document.getElementById("fail-ratio");
-        const sequenceContainer = document.getElementById("sequence-container");
+        const timelineContainer = document.getElementById("timeline-container");
 
         let isAnimating = false;
         let animationSpeed = 1;
@@ -199,17 +251,66 @@
           }
         }
 
-        function createSequence(sequence) {
-          sequenceContainer.innerHTML = "";
+        //
+        function initializeTimeline(frameCount, sequence) {
+          timelineContainer.innerHTML = "";
 
-          sequence.forEach((page, idx) => {
-            const pageEl = document.createElement("div");
-            pageEl.className =
-              "w-10 h-10 flex items-center justify-center text-lg font-medium bg-gray-200 rounded-md";
-            pageEl.textContent = page;
-            pageEl.dataset.index = idx;
-            sequenceContainer.appendChild(pageEl);
-          });
+          // adds a column on the left-most or first side to act as labels for Frames and Results
+          const labelColumn = document.createElement("div");
+          labelColumn.className = "timeline-column label-column";
+
+          // adds a header for each Page reference
+          const headerSpacer = document.createElement("div");
+          headerSpacer.className = "timeline-header";
+          headerSpacer.textContent = "";
+          labelColumn.appendChild(headerSpacer);
+
+          // adds Frame name/label on the left side for each column
+          for (let i = 0; i < frameCount; i++) {
+            const frameLabel = document.createElement("div");
+            frameLabel.className = "frame-label";
+            frameLabel.textContent = `F${i}`;
+            labelColumn.appendChild(frameLabel);
+          }
+
+          // adds a result (hit or fault) row label
+          const resultLabel = document.createElement("div");
+          resultLabel.className = "frame-label";
+          resultLabel.textContent = "Result";
+          labelColumn.appendChild(resultLabel);
+
+          timelineContainer.appendChild(labelColumn);
+
+          // creates columns for each step in the sequence
+          for (let i = 0; i < sequence.length; i++) {
+            const stepColumn = document.createElement("div");
+            stepColumn.className = "timeline-column";
+            stepColumn.dataset.step = i;
+
+            // adds a header with each page reference
+            const header = document.createElement("div");
+            header.className = "timeline-header";
+            header.textContent = sequence[i];
+            stepColumn.appendChild(header);
+
+            // add frames (empty initially)
+            for (let j = 0; j < frameCount; j++) {
+              const frame = document.createElement("div");
+              frame.className = "timeline-frame";
+              frame.dataset.frame = j;
+              frame.textContent = "-";
+              stepColumn.appendChild(frame);
+            }
+
+            // add result cell (hit/fault)
+            const resultCell = document.createElement("div");
+            resultCell.className = "timeline-frame";
+            resultCell.dataset.result = "pending";
+            resultCell.textContent = "-";
+            stepColumn.appendChild(resultCell);
+
+            timelineContainer.appendChild(stepColumn);
+          }
         }
 
         function updateStats(pageFaults, total) {
@@ -238,14 +339,10 @@
             .split(",")
             .map((s) => s.trim())
             .filter((s) => s !== "");
-          createSequence(sequence);
+          initializeTimeline(frameCount, sequence);
 
           currentPageEl.textContent = "-";
           updateStats(0, 0);
-
-          sequenceContainer.querySelectorAll("div").forEach((el) => {
-            el.classList.remove("bg-blue-200", "border-blue-500", "border-2");
-          });
         }
 
         function startAnimation() {
@@ -282,24 +379,15 @@
             }
 
             const page = sequence[currentIdx];
-            const pageEl = sequenceContainer.querySelector(
-              `[data-index="${currentIdx}"]`
-            );
 
-            // Highlight current page in sequence
-            sequenceContainer.querySelectorAll("div").forEach((el) => {
-              el.classList.remove("bg-blue-200", "border-blue-500", "border-2");
-            });
-            pageEl.classList.add("bg-blue-200", "border-blue-500", "border-2");
-
-            // Show current page
+            // shows current page
             currentPageEl.textContent = page;
 
-            // Check if page exists in frames
+            // check if Page exists in any of the current Frames
             const frameIdx = frames.indexOf(page);
             const frameElements = framesContainer.querySelectorAll(".frame");
 
-            // Remove any previous highlighting
+            // removes any previous highlighting
             frameElements.forEach((frame) => {
               frame.classList.remove(
                 "page-hit",
@@ -309,12 +397,49 @@
               );
             });
 
+            // gest the current timeline column
+            const currentColumn = timelineContainer.querySelector(
+              `[data-step="${currentIdx}"]`
+            );
+            currentColumn.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+
+            // updates the timeline column with current frame values
+            for (let i = 0; i < frameCount; i++) {
+              const timelineFrame = currentColumn.querySelector(
+                `[data-frame="${i}"]`
+              );
+              timelineFrame.textContent = frames[i] !== null ? frames[i] : "-";
+            }
+
             if (frameIdx !== -1) {
               // Page hit
               frameElements[frameIdx].classList.add("page-hit", "bg-green-500");
+
+              // Update the timeline for hit
+              const resultCell = currentColumn.querySelector("[data-result]");
+              resultCell.textContent = "Hit";
+              resultCell.style.backgroundColor = "#10b981"; // Green
+              resultCell.style.color = "white";
+
+              // Highlight the frame in the timeline
+              const timelineFrame = currentColumn.querySelector(
+                `[data-frame="${frameIdx}"]`
+              );
+              timelineFrame.classList.add("active");
+              timelineFrame.style.backgroundColor = "#e9ffef"; // Light green
             } else {
               // Page fault
               pageFaults++;
+
+              // Update the timeline for fault
+              const resultCell = currentColumn.querySelector("[data-result]");
+              resultCell.textContent = "Fault";
+              resultCell.style.backgroundColor = "#ef4444"; // Red
+              resultCell.style.color = "white";
 
               if (insertionOrder.length < frameCount) {
                 // There's still space in frames
@@ -326,6 +451,14 @@
                   "bg-red-500"
                 );
                 frameElements[emptyIdx].textContent = page;
+
+                // Highlight the frame in the timeline
+                const timelineFrame = currentColumn.querySelector(
+                  `[data-frame="${emptyIdx}"]`
+                );
+                timelineFrame.textContent = page;
+                timelineFrame.classList.add("active");
+                timelineFrame.style.backgroundColor = "#ffebeb"; // Light red
               } else {
                 // Replace oldest page
                 const oldestIdx = insertionOrder.shift();
@@ -336,6 +469,21 @@
                   "bg-red-500"
                 );
                 frameElements[oldestIdx].textContent = page;
+
+                // Highlight the frame in the timeline
+                const timelineFrame = currentColumn.querySelector(
+                  `[data-frame="${oldestIdx}"]`
+                );
+                timelineFrame.textContent = page;
+                timelineFrame.classList.add("active");
+                timelineFrame.style.backgroundColor = "#ffebeb"; // Light red
+              }
+            }
+
+            // Update the frames display with current values
+            for (let i = 0; i < frameCount; i++) {
+              if (frames[i] !== null) {
+                frameElements[i].textContent = frames[i];
               }
             }
 
