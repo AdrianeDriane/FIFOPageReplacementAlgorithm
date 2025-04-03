@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FIFO Page Replacement Algorithm</title>
+    <link href="./src/output.css" rel="stylesheet" />
+    <style>
+      .frame {
+        transition: all 0.3s ease-in-out;
+      }
+      .page-hit {
+        animation: hit 1s ease-in-out;
+      }
+      .page-fault {
+        animation: fault 1s ease-in-out;
+      }
+      @keyframes hit {
+        0% {
+          background-color: #10b981;
+        }
+        50% {
+          background-color: #059669;
+        }
+        100% {
+          background-color: #10b981;
+        }
+      }
+      @keyframes fault {
+        0% {
+          background-color: #ef4444;
+        }
+        50% {
+          background-color: #b91c1c;
+        }
+        100% {
+          background-color: #ef4444;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col items-center p-8">
+    <div class="max-w-4xl w-full bg-white rounded-lg shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-center mb-6">
+        FIFO Page Replacement Algorithm
+      </h1>
+
+      <div class="mb-8">
+        <p class="text-gray-700 mb-4">
+          The FIFO (First In, First Out) page replacement algorithm works by
+          replacing the oldest page in memory when a new page needs to be loaded
+          and there's no free frame available.
+        </p>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-8">
+        <div class="w-full md:w-1/2">
+          <h2 class="text-xl font-semibold mb-4">Configuration</h2>
+
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2" for="frame-count"
+              >Number of Frames:</label
+            >
+            <input
+              id="frame-count"
+              type="number"
+              min="1"
+              max="10"
+              value="3"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2" for="page-sequence"
+              >Page Reference Sequence:</label
+            >
+            <input
+              id="page-sequence"
+              type="text"
+              value="1,2,3,4,1,2,5,1,2,3,4,5"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p class="text-sm text-gray-500 mt-1">
+              Enter numbers separated by commas
+            </p>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2" for="animation-speed"
+              >Animation Speed:</label
+            >
+            <input
+              id="animation-speed"
+              type="range"
+              min="0.5"
+              max="3"
+              step="0.5"
+              value="1"
+              class="w-full"
+            />
+            <div class="flex justify-between text-sm text-gray-500">
+              <span>Slow</span>
+              <span>Fast</span>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <button
+              id="start-btn"
+              class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Start Animation
+            </button>
+            <button
+              id="reset-btn"
+              class="px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="w-full md:w-1/2">
+          <h2 class="text-xl font-semibold mb-4">Visualization</h2>
+
+          <div class="mb-4">
+            <h3 class="text-lg font-medium mb-2">Memory Frames</h3>
+            <div id="frames-container" class="flex flex-col space-y-2"></div>
+          </div>
+
+          <div class="mb-4">
+            <h3 class="text-lg font-medium mb-2">Current Page</h3>
+            <div
+              id="current-page"
+              class="w-16 h-16 flex items-center justify-center text-xl font-bold bg-gray-200 rounded-md"
+            >
+              -
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h3 class="text-lg font-medium mb-2">Statistics</h3>
+            <div class="flex flex-col space-y-2">
+              <div class="flex justify-between">
+                <span class="text-gray-700">Page Faults:</span>
+                <span id="page-faults" class="font-semibold">0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Page Hits:</span>
+                <span id="page-hits" class="font-semibold">0</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-700">Hit Ratio:</span>
+                <span id="hit-ratio" class="font-semibold">0%</span>
+                <span class="text-gray-700">Fail Ratio:</span>
+                <span id="fail-ratio" class="font-semibold">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <h2 class="text-xl font-semibold mb-4">Sequence Progress</h2>
+        <div id="sequence-container" class="flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const frameCountInput = document.getElementById("frame-count");
+        const pageSequenceInput = document.getElementById("page-sequence");
+        const animationSpeedInput = document.getElementById("animation-speed");
+        const startBtn = document.getElementById("start-btn");
+        const resetBtn = document.getElementById("reset-btn");
+        const framesContainer = document.getElementById("frames-container");
+        const currentPageEl = document.getElementById("current-page");
+        const pageFaultsEl = document.getElementById("page-faults");
+        const pageHitsEl = document.getElementById("page-hits");
+        const hitRatioEl = document.getElementById("hit-ratio");
+        const failRatioEl = document.getElementById("fail-ratio");
+        const sequenceContainer = document.getElementById("sequence-container");
+
+        let isAnimating = false;
+        let animationSpeed = 1;
+        let animationTimeout;
+
+        function createFrames(count) {
+          framesContainer.innerHTML = "";
+
+          for (let i = 0; i < count; i++) {
+            const frameEl = document.createElement("div");
+            frameEl.className =
+              "frame w-full h-16 flex items-center justify-center text-xl font-bold bg-gray-200 rounded-md";
+            frameEl.textContent = "-";
+            frameEl.dataset.index = i;
+            framesContainer.appendChild(frameEl);
+          }
+        }
+
+        function createSequence(sequence) {
+          sequenceContainer.innerHTML = "";
+
+          sequence.forEach((page, idx) => {
+            const pageEl = document.createElement("div");
+            pageEl.className =
+              "w-10 h-10 flex items-center justify-center text-lg font-medium bg-gray-200 rounded-md";
+            pageEl.textContent = page;
+            pageEl.dataset.index = idx;
+            sequenceContainer.appendChild(pageEl);
+          });
+        }
+
+        function updateStats(pageFaults, total) {
+          const pageHits = total - pageFaults;
+          const hitRatio =
+            total > 0 ? ((pageHits / total) * 100).toFixed(1) : "0";
+          const failRatio =
+            total > 0 ? ((pageFaults / total) * 100).toFixed(1) : "0";
+
+          pageFaultsEl.textContent = pageFaults;
+          pageHitsEl.textContent = pageHits;
+          hitRatioEl.textContent = hitRatio + "%";
+          failRatioEl.textContent = failRatio + "%";
+        }
+
+        function resetAnimation() {
+          clearTimeout(animationTimeout);
+          isAnimating = false;
+          startBtn.textContent = "Start Animation";
+          startBtn.disabled = false;
+
+          const frameCount = parseInt(frameCountInput.value);
+          createFrames(frameCount);
+
+          const sequence = pageSequenceInput.value
+            .split(",")
+            .map((s) => s.trim())
+            .filter((s) => s !== "");
+          createSequence(sequence);
+
+          currentPageEl.textContent = "-";
+          updateStats(0, 0);
+
+          sequenceContainer.querySelectorAll("div").forEach((el) => {
+            el.classList.remove("bg-blue-200", "border-blue-500", "border-2");
+          });
+        }
+
+        function startAnimation() {
+          if (isAnimating) {
+            clearTimeout(animationTimeout);
+            isAnimating = false;
+            startBtn.textContent = "Resume Animation";
+            return;
+          }
+
+          startBtn.textContent = "Pause Animation";
+          isAnimating = true;
+
+          const frameCount = parseInt(frameCountInput.value);
+          const sequence = pageSequenceInput.value
+            .split(",")
+            .map((s) => s.trim())
+            .filter((s) => s !== "");
+          animationSpeed = parseFloat(animationSpeedInput.value);
+
+          if (sequence.length === 0) return;
+
+          let currentIdx = 0;
+          let pageFaults = 0;
+          let frames = Array(frameCount).fill(null);
+          let insertionOrder = [];
+
+          function animate() {
+            if (!isAnimating || currentIdx >= sequence.length) {
+              isAnimating = false;
+              startBtn.textContent = "Start Animation";
+              startBtn.disabled = currentIdx >= sequence.length;
+              return;
+            }
+
+            const page = sequence[currentIdx];
+            const pageEl = sequenceContainer.querySelector(
+              `[data-index="${currentIdx}"]`
+            );
+
+            // Highlight current page in sequence
+            sequenceContainer.querySelectorAll("div").forEach((el) => {
+              el.classList.remove("bg-blue-200", "border-blue-500", "border-2");
+            });
+            pageEl.classList.add("bg-blue-200", "border-blue-500", "border-2");
+
+            // Show current page
+            currentPageEl.textContent = page;
+
+            // Check if page exists in frames
+            const frameIdx = frames.indexOf(page);
+            const frameElements = framesContainer.querySelectorAll(".frame");
+
+            // Remove any previous highlighting
+            frameElements.forEach((frame) => {
+              frame.classList.remove(
+                "page-hit",
+                "page-fault",
+                "bg-red-500",
+                "bg-green-500"
+              );
+            });
+
+            if (frameIdx !== -1) {
+              // Page hit
+              frameElements[frameIdx].classList.add("page-hit", "bg-green-500");
+            } else {
+              // Page fault
+              pageFaults++;
+
+              if (insertionOrder.length < frameCount) {
+                // There's still space in frames
+                const emptyIdx = frames.indexOf(null);
+                frames[emptyIdx] = page;
+                insertionOrder.push(emptyIdx);
+                frameElements[emptyIdx].classList.add(
+                  "page-fault",
+                  "bg-red-500"
+                );
+                frameElements[emptyIdx].textContent = page;
+              } else {
+                // Replace oldest page
+                const oldestIdx = insertionOrder.shift();
+                frames[oldestIdx] = page;
+                insertionOrder.push(oldestIdx);
+                frameElements[oldestIdx].classList.add(
+                  "page-fault",
+                  "bg-red-500"
+                );
+                frameElements[oldestIdx].textContent = page;
+              }
+            }
+
+            // Update statistics
+            updateStats(pageFaults, currentIdx + 1);
+
+            // Move to next page
+            currentIdx++;
+
+            // Schedule next animation
+            animationTimeout = setTimeout(animate, 1000 / animationSpeed);
+          }
+
+          animate();
+        }
+
+        // Event listeners
+        frameCountInput.addEventListener("change", resetAnimation);
+        pageSequenceInput.addEventListener("change", resetAnimation);
+        resetBtn.addEventListener("click", resetAnimation);
+        startBtn.addEventListener("click", startAnimation);
+
+        // Initialize
+        resetAnimation();
+      });
+    </script>
+  </body>
+</html>
