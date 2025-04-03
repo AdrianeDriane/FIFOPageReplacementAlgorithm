@@ -144,6 +144,31 @@
           </div>
 
           <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Animation Mode:</label>
+            <div class="flex gap-4">
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  name="animation-mode"
+                  value="automatic"
+                  checked
+                  class="mr-2"
+                />
+                Automatic
+              </label>
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  name="animation-mode"
+                  value="manual"
+                  class="mr-2"
+                />
+                Manual
+              </label>
+            </div>
+          </div>
+
+          <div id="auto-controls" class="mb-4">
             <label class="block text-gray-700 mb-2" for="animation-speed"
               >Animation Speed:</label
             >
@@ -162,7 +187,27 @@
             </div>
           </div>
 
-          <div class="flex gap-4">
+          <div
+            id="manual-controls"
+            class="mb-4 flex gap-4"
+            style="display: none"
+          >
+            <button
+              id="prev-btn"
+              class="px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50"
+              disabled
+            >
+              Previous
+            </button>
+            <button
+              id="next-btn"
+              class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Next
+            </button>
+          </div>
+
+          <div class="flex gap-4" id="auto-buttons">
             <button
               id="start-btn"
               class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -226,6 +271,8 @@
         const animationSpeedInput = document.getElementById("animation-speed");
         const startBtn = document.getElementById("start-btn");
         const resetBtn = document.getElementById("reset-btn");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
         const framesContainer = document.getElementById("frames-container");
         const currentPageEl = document.getElementById("current-page");
         const pageFaultsEl = document.getElementById("page-faults");
@@ -233,10 +280,40 @@
         const hitRatioEl = document.getElementById("hit-ratio");
         const failRatioEl = document.getElementById("fail-ratio");
         const timelineContainer = document.getElementById("timeline-container");
+        const autoControls = document.getElementById("auto-controls");
+        const manualControls = document.getElementById("manual-controls");
+        const autoButtons = document.getElementById("auto-buttons");
+
+        // Animation mode radio buttons
+        const animationModeRadios = document.querySelectorAll(
+          'input[name="animation-mode"]'
+        );
 
         let isAnimating = false;
         let animationSpeed = 1;
         let animationTimeout;
+        let currentIdx = 0;
+        let frames = [];
+        let insertionOrder = [];
+        let sequence = [];
+        let pageFaults = 0;
+        let frameCount = 3;
+
+        // Animation mode selection
+        animationModeRadios.forEach((radio) => {
+          radio.addEventListener("change", (e) => {
+            if (e.target.value === "automatic") {
+              autoControls.style.display = "block";
+              manualControls.style.display = "none";
+              autoButtons.style.display = "flex";
+            } else {
+              autoControls.style.display = "none";
+              manualControls.style.display = "flex";
+              autoButtons.style.display = "none";
+            }
+            resetAnimation();
+          });
+        });
 
         function createFrames(count) {
           framesContainer.innerHTML = "";
@@ -251,7 +328,6 @@
           }
         }
 
-        //
         function initializeTimeline(frameCount, sequence) {
           timelineContainer.innerHTML = "";
 
@@ -329,20 +405,212 @@
         function resetAnimation() {
           clearTimeout(animationTimeout);
           isAnimating = false;
+          currentIdx = 0;
+          pageFaults = 0;
+
           startBtn.textContent = "Start Animation";
           startBtn.disabled = false;
+          prevBtn.disabled = true;
+          nextBtn.disabled = false;
 
-          const frameCount = parseInt(frameCountInput.value);
+          frameCount = parseInt(frameCountInput.value);
           createFrames(frameCount);
 
-          const sequence = pageSequenceInput.value
+          sequence = pageSequenceInput.value
             .split(",")
             .map((s) => s.trim())
             .filter((s) => s !== "");
           initializeTimeline(frameCount, sequence);
 
+          frames = Array(frameCount).fill(null);
+          insertionOrder = [];
+
           currentPageEl.textContent = "-";
           updateStats(0, 0);
+
+          // Reset timeline columns
+          const timelineColumns = timelineContainer.querySelectorAll(
+            ".timeline-column:not(.label-column)"
+          );
+          timelineColumns.forEach((column) => {
+            const frames = column.querySelectorAll("[data-frame]");
+            frames.forEach((frame) => {
+              frame.textContent = "-";
+              frame.classList.remove("active");
+              frame.style.backgroundColor = "";
+            });
+
+            const resultCell = column.querySelector("[data-result]");
+            resultCell.textContent = "-";
+            resultCell.style.backgroundColor = "";
+            resultCell.style.color = "";
+          });
+
+          // Reset frame elements
+          const frameElements = framesContainer.querySelectorAll(".frame");
+          frameElements.forEach((frame) => {
+            frame.textContent = "-";
+            frame.classList.remove(
+              "page-hit",
+              "page-fault",
+              "bg-red-500",
+              "bg-green-500"
+            );
+          });
+        }
+
+        function processStep(step) {
+          if (step < 0 || step >= sequence.length) return;
+
+          const page = sequence[step];
+          const frameElements = framesContainer.querySelectorAll(".frame");
+
+          // Show current page
+          currentPageEl.textContent = page;
+
+          // Remove any previous highlighting
+          frameElements.forEach((frame) => {
+            frame.classList.remove(
+              "page-hit",
+              "page-fault",
+              "bg-red-500",
+              "bg-green-500"
+            );
+          });
+
+          // Get current timeline column
+          const currentColumn = timelineContainer.querySelector(
+            `[data-step="${step}"]`
+          );
+          currentColumn.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+
+          // Check if page exists in frames
+          const frameIdx = frames.indexOf(page);
+
+          if (frameIdx !== -1) {
+            // Page hit
+            frameElements[frameIdx].classList.add("page-hit", "bg-green-500");
+
+            // Update timeline for hit
+            const resultCell = currentColumn.querySelector("[data-result]");
+            resultCell.textContent = "Hit";
+            resultCell.style.backgroundColor = "#10b981"; // Green
+            resultCell.style.color = "white";
+
+            // Highlight frame in timeline
+            const timelineFrame = currentColumn.querySelector(
+              `[data-frame="${frameIdx}"]`
+            );
+            timelineFrame.classList.add("active");
+            timelineFrame.style.backgroundColor = "#e9ffef"; // Light green
+            timelineFrame.textContent = page;
+
+            // Update other frames in timeline
+            for (let i = 0; i < frameCount; i++) {
+              if (i !== frameIdx) {
+                const otherFrame = currentColumn.querySelector(
+                  `[data-frame="${i}"]`
+                );
+                otherFrame.textContent = frames[i] !== null ? frames[i] : "-";
+              }
+            }
+          } else {
+            // Page fault
+            pageFaults++;
+
+            // Update timeline for fault
+            const resultCell = currentColumn.querySelector("[data-result]");
+            resultCell.textContent = "Fault";
+            resultCell.style.backgroundColor = "#ef4444"; // Red
+            resultCell.style.color = "white";
+
+            if (insertionOrder.length < frameCount) {
+              // Still space in frames
+              const emptyIdx = frames.indexOf(null);
+              frames[emptyIdx] = page;
+              insertionOrder.push(emptyIdx);
+              frameElements[emptyIdx].classList.add("page-fault", "bg-red-500");
+              frameElements[emptyIdx].textContent = page;
+
+              // Highlight frame in timeline
+              const timelineFrame = currentColumn.querySelector(
+                `[data-frame="${emptyIdx}"]`
+              );
+              timelineFrame.textContent = page;
+              timelineFrame.classList.add("active");
+              timelineFrame.style.backgroundColor = "#ffebeb"; // Light red
+            } else {
+              // Replace oldest page
+              const oldestIdx = insertionOrder.shift();
+              frames[oldestIdx] = page;
+              insertionOrder.push(oldestIdx);
+              frameElements[oldestIdx].classList.add(
+                "page-fault",
+                "bg-red-500"
+              );
+              frameElements[oldestIdx].textContent = page;
+
+              // Highlight frame in timeline
+              const timelineFrame = currentColumn.querySelector(
+                `[data-frame="${oldestIdx}"]`
+              );
+              timelineFrame.textContent = page;
+              timelineFrame.classList.add("active");
+              timelineFrame.style.backgroundColor = "#ffebeb"; // Light red
+            }
+
+            // Update other frames in timeline
+            for (let i = 0; i < frameCount; i++) {
+              const timelineFrame = currentColumn.querySelector(
+                `[data-frame="${i}"]`
+              );
+              timelineFrame.textContent = frames[i] !== null ? frames[i] : "-";
+            }
+          }
+
+          // Update frames display
+          for (let i = 0; i < frameCount; i++) {
+            if (frames[i] !== null) {
+              frameElements[i].textContent = frames[i];
+            }
+          }
+
+          // Update statistics
+          updateStats(pageFaults, step + 1);
+        }
+
+        function handlePrev() {
+          if (currentIdx <= 0) return;
+
+          // Reset to previous state
+          resetAnimation();
+
+          // Process all steps up to the previous one
+          for (let i = 0; i < currentIdx - 1; i++) {
+            processStep(i);
+          }
+
+          currentIdx--;
+          processStep(currentIdx);
+
+          // Update button states
+          prevBtn.disabled = currentIdx <= 0;
+          nextBtn.disabled = currentIdx >= sequence.length - 1;
+        }
+
+        function handleNext() {
+          if (currentIdx >= sequence.length) return;
+
+          processStep(currentIdx);
+          currentIdx++;
+
+          // Update button states
+          prevBtn.disabled = currentIdx <= 0;
+          nextBtn.disabled = currentIdx >= sequence.length;
         }
 
         function startAnimation() {
@@ -355,20 +623,7 @@
 
           startBtn.textContent = "Pause Animation";
           isAnimating = true;
-
-          const frameCount = parseInt(frameCountInput.value);
-          const sequence = pageSequenceInput.value
-            .split(",")
-            .map((s) => s.trim())
-            .filter((s) => s !== "");
           animationSpeed = parseFloat(animationSpeedInput.value);
-
-          if (sequence.length === 0) return;
-
-          let currentIdx = 0;
-          let pageFaults = 0;
-          let frames = Array(frameCount).fill(null);
-          let insertionOrder = [];
 
           function animate() {
             if (!isAnimating || currentIdx >= sequence.length) {
@@ -378,123 +633,17 @@
               return;
             }
 
-            const page = sequence[currentIdx];
-
-            // shows current page
-            currentPageEl.textContent = page;
-
-            // check if Page exists in any of the current Frames
-            const frameIdx = frames.indexOf(page);
-            const frameElements = framesContainer.querySelectorAll(".frame");
-
-            // removes any previous highlighting
-            frameElements.forEach((frame) => {
-              frame.classList.remove(
-                "page-hit",
-                "page-fault",
-                "bg-red-500",
-                "bg-green-500"
-              );
-            });
-
-            // gest the current timeline column
-            const currentColumn = timelineContainer.querySelector(
-              `[data-step="${currentIdx}"]`
-            );
-            currentColumn.scrollIntoView({
-              behavior: "smooth",
-              block: "nearest",
-              inline: "center",
-            });
-
-            // updates the timeline column with current frame values
-            for (let i = 0; i < frameCount; i++) {
-              const timelineFrame = currentColumn.querySelector(
-                `[data-frame="${i}"]`
-              );
-              timelineFrame.textContent = frames[i] !== null ? frames[i] : "-";
-            }
-
-            if (frameIdx !== -1) {
-              // Page hit
-              frameElements[frameIdx].classList.add("page-hit", "bg-green-500");
-
-              // Update the timeline for hit
-              const resultCell = currentColumn.querySelector("[data-result]");
-              resultCell.textContent = "Hit";
-              resultCell.style.backgroundColor = "#10b981"; // Green
-              resultCell.style.color = "white";
-
-              // Highlight the frame in the timeline
-              const timelineFrame = currentColumn.querySelector(
-                `[data-frame="${frameIdx}"]`
-              );
-              timelineFrame.classList.add("active");
-              timelineFrame.style.backgroundColor = "#e9ffef"; // Light green
-            } else {
-              // Page fault
-              pageFaults++;
-
-              // Update the timeline for fault
-              const resultCell = currentColumn.querySelector("[data-result]");
-              resultCell.textContent = "Fault";
-              resultCell.style.backgroundColor = "#ef4444"; // Red
-              resultCell.style.color = "white";
-
-              if (insertionOrder.length < frameCount) {
-                // There's still space in frames
-                const emptyIdx = frames.indexOf(null);
-                frames[emptyIdx] = page;
-                insertionOrder.push(emptyIdx);
-                frameElements[emptyIdx].classList.add(
-                  "page-fault",
-                  "bg-red-500"
-                );
-                frameElements[emptyIdx].textContent = page;
-
-                // Highlight the frame in the timeline
-                const timelineFrame = currentColumn.querySelector(
-                  `[data-frame="${emptyIdx}"]`
-                );
-                timelineFrame.textContent = page;
-                timelineFrame.classList.add("active");
-                timelineFrame.style.backgroundColor = "#ffebeb"; // Light red
-              } else {
-                // Replace oldest page
-                const oldestIdx = insertionOrder.shift();
-                frames[oldestIdx] = page;
-                insertionOrder.push(oldestIdx);
-                frameElements[oldestIdx].classList.add(
-                  "page-fault",
-                  "bg-red-500"
-                );
-                frameElements[oldestIdx].textContent = page;
-
-                // Highlight the frame in the timeline
-                const timelineFrame = currentColumn.querySelector(
-                  `[data-frame="${oldestIdx}"]`
-                );
-                timelineFrame.textContent = page;
-                timelineFrame.classList.add("active");
-                timelineFrame.style.backgroundColor = "#ffebeb"; // Light red
-              }
-            }
-
-            // Update the frames display with current values
-            for (let i = 0; i < frameCount; i++) {
-              if (frames[i] !== null) {
-                frameElements[i].textContent = frames[i];
-              }
-            }
-
-            // Update statistics
-            updateStats(pageFaults, currentIdx + 1);
-
-            // Move to next page
+            processStep(currentIdx);
             currentIdx++;
 
             // Schedule next animation
-            animationTimeout = setTimeout(animate, 1000 / animationSpeed);
+            if (currentIdx < sequence.length) {
+              animationTimeout = setTimeout(animate, 1000 / animationSpeed);
+            } else {
+              isAnimating = false;
+              startBtn.textContent = "Start Animation";
+              startBtn.disabled = true;
+            }
           }
 
           animate();
@@ -505,6 +654,8 @@
         pageSequenceInput.addEventListener("change", resetAnimation);
         resetBtn.addEventListener("click", resetAnimation);
         startBtn.addEventListener("click", startAnimation);
+        prevBtn.addEventListener("click", handlePrev);
+        nextBtn.addEventListener("click", handleNext);
 
         // Initialize
         resetAnimation();
