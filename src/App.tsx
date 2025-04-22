@@ -27,6 +27,7 @@ export default function App() {
   
   // Refs
   const initialized = useRef(false);
+  const configureButtonRef = useRef<HTMLButtonElement>(null);
 
   const parsePageReferences = () => {
     const allowedLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
@@ -208,6 +209,13 @@ export default function App() {
     setIsRunning(false);
   };
 
+  const handleConfigureTextClick = () => {
+    if (configureButtonRef.current) {
+      configureButtonRef.current.focus();
+      configureButtonRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   return (
     <div className="flex flex-col p-6 mx-auto bg-gray-900 min-h-screen font-mono text-gray-200">
       <h1 className="text-3xl font-bold text-center mb-8 text-green-500">
@@ -215,92 +223,94 @@ export default function App() {
       </h1>
       
       {/* Visualization Timeline */}
-      <div className="bg-gray-800 p-6 rounded-lg border border-green-700 shadow-md mb-8 overflow-x-auto">
+      <div className="bg-gray-800 p-6 rounded-lg border border-green-700 shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4 text-green-400">FIFO Visualization Timeline</h2>
         
         {pageReferences.length > 0 ? (
-          <div className="min-w-full">
-            <div className="flex mb-2">
-              <div className="w-24 font-bold">Reference</div>
-              {pageReferences.map((page, idx) => (
-                <div 
-                  key={idx} 
-                  className={`w-12 text-center ${
-                    hasStarted && idx === currentStep ? "bg-gray-700 rounded-t-md border-t border-l border-r border-green-500" : ""
-                  }`}
-                >
-                  {page}
+          <div className="overflow-x-auto">
+            <div style={{ minWidth: `${Math.max(800, pageReferences.length * 50)}px` }} className="pb-2">
+              <div className="flex mb-2 gap-2">
+                <div className="w-24 flex-shrink-0 font-bold">Reference</div>
+                {pageReferences.map((page, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`w-12 flex-shrink-0 text-center ${
+                      hasStarted && idx === currentStep ? "bg-gray-700 rounded-t-md border-t border-l border-r border-green-500" : ""
+                    }`}
+                  >
+                    {page}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Frame rows */}
+              {Array.from({ length: parseInt(numFrames) }).map((_, frameIdx) => (
+                <div key={frameIdx} className="flex mb-2 gap-2">
+                  <div className="w-24 flex-shrink-0 font-bold">Frame {frameIdx + 1}</div>
+                  {pageReferences.map((_, stepIdx) => {
+                    // Only show content for steps that have already been processed
+                    const isCurrentStep = hasStarted && stepIdx === currentStep;
+                    const showContent = hasStarted && stepIdx <= currentStep;
+                    
+                    let frameValue = null;
+                    let isNewlyAdded = false;
+                    
+                    if (showContent) {
+                      frameValue = fifoSteps[stepIdx].frames[frameIdx];
+                      isNewlyAdded = isCurrentStep && 
+                                    fifoSteps[stepIdx].status === 'fault' && 
+                                    fifoSteps[stepIdx].pageReference === frameValue;
+                    }
+                    
+                    return (
+                      <div 
+                        key={stepIdx} 
+                        className={`w-12 h-12 flex-shrink-0 flex items-center justify-center transition-all duration-300
+                          ${isCurrentStep ? "bg-gray-700" : "bg-gray-800"}
+                          ${showContent && frameValue !== null ? "border-2 rounded-md" : "border border-dashed"}
+                          ${showContent && isNewlyAdded ? "border-red-500" : 
+                            showContent && frameValue !== null ? "border-green-600" : "border-gray-600"}
+                        `}
+                      >
+                        <span className={`
+                          ${showContent && isNewlyAdded ? "text-red-400 font-bold" : 
+                            showContent && frameValue !== null ? "text-green-400" : "text-gray-600"}
+                        `}>
+                          {showContent && frameValue !== null ? frameValue : "-"}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
-            </div>
-            
-            {/* Frame rows */}
-            {Array.from({ length: parseInt(numFrames) }).map((_, frameIdx) => (
-              <div key={frameIdx} className="flex mb-2">
-                <div className="w-24 font-bold">Frame {frameIdx + 1}</div>
-                {pageReferences.map((_, stepIdx) => {
-                  // Only show content for steps that have already been processed
-                  const isCurrentStep = hasStarted && stepIdx === currentStep;
-                  const showContent = hasStarted && stepIdx <= currentStep;
+              
+              {/* Results row */}
+              <div className="flex mt-2 gap-2">
+                <div className="w-24 flex-shrink-0 font-bold">Result</div>
+                {pageReferences.map((_, idx) => {
+                  const isCurrentStep = hasStarted && idx === currentStep;
+                  const showResult = hasStarted && idx <= currentStep;
                   
-                  let frameValue = null;
-                  let isNewlyAdded = false;
-                  
-                  if (showContent) {
-                    frameValue = fifoSteps[stepIdx].frames[frameIdx];
-                    isNewlyAdded = isCurrentStep && 
-                                  fifoSteps[stepIdx].status === 'fault' && 
-                                  fifoSteps[stepIdx].pageReference === frameValue;
+                  let status = '';
+                  if (showResult) {
+                    status = fifoSteps[idx].status;
                   }
                   
                   return (
                     <div 
-                      key={stepIdx} 
-                      className={`w-12 h-12 flex items-center justify-center transition-all duration-300
-                        ${isCurrentStep ? "bg-gray-700" : "bg-gray-800"}
-                        ${showContent && frameValue !== null ? "border-2 rounded-md" : "border border-dashed"}
-                        ${showContent && isNewlyAdded ? "border-red-500" : 
-                          showContent && frameValue !== null ? "border-green-600" : "border-gray-600"}
-                      `}
+                      key={idx} 
+                      className={`w-12 flex-shrink-0 text-center ${
+                        isCurrentStep ? "bg-gray-700 rounded-b-md border-b border-l border-r border-green-500" : ""
+                      } ${
+                        showResult && status === 'fault' ? "text-red-500 font-bold" : 
+                        showResult && status === 'hit' ? "text-green-500 font-bold" : ""
+                      }`}
                     >
-                      <span className={`
-                        ${showContent && isNewlyAdded ? "text-red-400 font-bold" : 
-                          showContent && frameValue !== null ? "text-green-400" : "text-gray-600"}
-                      `}>
-                        {showContent && frameValue !== null ? frameValue : "-"}
-                      </span>
+                      {showResult ? (status === 'fault' ? 'F' : 'H') : ''}
                     </div>
                   );
                 })}
               </div>
-            ))}
-            
-            {/* Results row */}
-            <div className="flex mt-2">
-              <div className="w-24 font-bold">Result</div>
-              {pageReferences.map((_, idx) => {
-                const isCurrentStep = hasStarted && idx === currentStep;
-                const showResult = hasStarted && idx <= currentStep;
-                
-                let status = '';
-                if (showResult) {
-                  status = fifoSteps[idx].status;
-                }
-                
-                return (
-                  <div 
-                    key={idx} 
-                    className={`w-12 text-center ${
-                      isCurrentStep ? "bg-gray-700 rounded-b-md border-b border-l border-r border-green-500" : ""
-                    } ${
-                      showResult && status === 'fault' ? "text-red-500 font-bold" : 
-                      showResult && status === 'hit' ? "text-green-500 font-bold" : ""
-                    }`}
-                  >
-                    {showResult ? (status === 'fault' ? 'F' : 'H') : ''}
-                  </div>
-                );
-              })}
             </div>
             
             {/* Current step indicator */}
@@ -314,7 +324,13 @@ export default function App() {
                 </div>
               ) : (
                 <div className="text-lg text-green-400">
-                  Visualization ready - Click Start to Begin
+                  <button 
+                    onClick={handleConfigureTextClick}
+                    className="text-green-300 hover:text-green-100 underline focus:outline-none"
+                  >
+                    Configure
+                  </button>
+                  {" "}and click Start button to begin
                 </div>
               )}
             </div>
@@ -402,6 +418,7 @@ export default function App() {
               </button>
               
               <button
+                ref={configureButtonRef}
                 onClick={nextStep}
                 disabled={hasStarted && currentStep >= fifoSteps.length - 1}
                 className="bg-green-700 hover:bg-green-600 text-gray-200 py-2 px-4 rounded-md border border-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -421,6 +438,7 @@ export default function App() {
           ) : (
             <div className="flex flex-wrap gap-3 items-center">
               <button
+                ref={configureButtonRef}
                 onClick={toggleAnimation}
                 className={`py-2 px-4 rounded-md border ${
                   isRunning 
