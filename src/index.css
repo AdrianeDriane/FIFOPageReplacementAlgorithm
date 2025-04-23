@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Cooper-Light-BT";
+  src: url("/fonts/Cooper-Light-BT.ttf.woff") format("woff"),
+    url("/fonts/Cooper-Light-BT.ttf.svg") format("svg"),
+    url("/fonts/Cooper-Light-BT.ttf.eot"),
+    url("/fonts/Cooper-Light-BT.ttf.eot?#iefix") format("embedded-opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Euclid-Circular-A";
+  src: url("/fonts/Euclid\ Circular\ A\ Light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.cfont-cooper {
+  font-family: "Cooper-Light-BT";
+}
+
+.cfont-euclid {
+  font-family: "Euclid-Circular-A";
+}
+

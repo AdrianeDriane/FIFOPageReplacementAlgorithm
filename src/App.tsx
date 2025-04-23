@@ -218,13 +218,13 @@ export default function App() {
 
   return (
     <div className="flex flex-col p-6 mx-auto bg-gray-900 min-h-screen font-mono text-gray-200">
-      <h1 className="text-3xl font-bold text-center mb-8 text-green-500">
+      <h1 className="text-3xl cfont-cooper font-bold text-center mb-8 text-green-500">
         FIFO Page Replacement Algorithm Visualizer
       </h1>
       
       {/* Visualization Timeline */}
       <div className="bg-gray-800 p-6 rounded-lg border border-green-700 shadow-md mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-green-400">FIFO Visualization Timeline</h2>
+        <h2 className="text-xl font-semibold cfont-euclid mb-4 text-green-400">FIFO Visualization Timeline</h2>
         
         {pageReferences.length > 0 ? (
           <div className="overflow-x-auto">
