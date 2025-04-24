@@ -7,7 +7,7 @@ import {
   useAnimationControls,
 } from "framer-motion";
 import { useMouse } from "../providers/mouse/MouseProvider";
-import { useDock } from "./Dock";
+import { useDock } from "../hooks/useDock";
 
 const DOCK_ITEM_SIZE = 45;
 const INCREASE_AMP_BY = 35;
@@ -83,7 +83,7 @@ export default function DockItem({ children, onClick }: DockItemProps) {
       <motion.button
         ref={ref}
         className="flex flex-none select-none items-center justify-center rounded-3xl
-        bg-[#112733] outline-none ring-1 ring-white/10 focus-visible:ring-4"
+        bg-[#112733] outline-none ring-1 ring-white/10 hover:cursor-pointer focus-visible:ring-4"
         style={{
           height: spring,
           width: spring,

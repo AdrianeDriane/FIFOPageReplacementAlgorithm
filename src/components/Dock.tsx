@@ -1,21 +1,7 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { MouseProvider } from "../providers/mouse/MouseProvider";
+import { DockContext } from "../hooks/useDock";
 import DockItem from "./DockItem";
-
-interface DockContextType {
-  isHovered: boolean;
-  width: number | undefined;
-}
-
-const DockContext = createContext<DockContextType | null>(null);
-
-export function useDock() {
-  const context = useContext(DockContext);
-  if (!context) {
-    throw new Error("useDock must be used within a DockContext.Provider");
-  }
-  return context;
-}
 
 export default function Dock() {
   const ref = useRef<HTMLDivElement | null>(null);

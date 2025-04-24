@@ -399,7 +399,7 @@ export default function App() {
                 <div className="text-sm cfont-euclid text-[#f9fbfa]">
                   <button 
                     onClick={handleConfigureTextClick}
-                    className="text-green-300 hover:text-green-100 underline focus:outline-none hover:cursor-pointer"
+                    className="text-green-300 hover:text-green-100 underline focus:outline-none cursor-pointer"
                   >
                     Configure
                   </button>
