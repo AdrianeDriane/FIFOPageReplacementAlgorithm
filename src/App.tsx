@@ -239,8 +239,8 @@ export default function App() {
 
   return (
     <div className="flex flex-col items-center justify-center p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
-      <h1 className="text-3xl cfont-cooper font-normal text-center mb-8 text-[#f9fbfa] flex items-center gap-2">
-        <Activity className="text-[#71f6ba]" />
+      <h1 className="text-3xl cfont-cooper font-normal md:text-center mb-8 text-[#f9fbfa] flex items-center gap-8">
+        <Activity className="text-[#71f6ba] h-13 w-13" />
         FIFO Page Replacement Algorithm Visualizer
       </h1>
       
@@ -319,9 +319,9 @@ export default function App() {
                         return (
                           <div 
                             key={stepIdx} 
-                            className={`w-12 h-12 mr-2 flex-shrink-0 flex items-center justify-center transition-all duration-300
-                              ${isCurrentStep ? "bg-gray-700" : "bg-gray-800"}
-                              ${showContent && frameValue !== null ? "border-[1.5px] rounded-md " : "border border-dashed"}
+                            className={`w-12 h-12 mr-2 flex-shrink-0 flex items-center justify-center transition-all duration-500
+                              ${isCurrentStep ? "dragging" : ""}
+                              ${showContent && frameValue !== null ? "border-[1px] rounded-md " : "border border-dashed"}
                               ${showContent && isNewlyAdded ? "border-red-500" : 
                                 showContent && isHit ? "border-green-500" :
                                 showContent && frameValue !== null ? "border-[#f9fbfa]" : "border-gray-600"}
@@ -398,7 +398,7 @@ export default function App() {
                 <div className="text-sm cfont-euclid text-[#f9fbfa]">
                   <button 
                     onClick={handleConfigureTextClick}
-                    className="text-green-300 hover:text-green-100 underline focus:outline-none"
+                    className="text-green-300 hover:text-green-100 underline focus:outline-none hover:cursor-pointer"
                   >
                     Configure
                   </button>
@@ -422,41 +422,7 @@ export default function App() {
             <Settings className="h-5 w-5" />
             Configuration
           </h2>
-          <div className="flex flex-col gap-6 pl-2">
-            <div>
-              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
-                Number of Frames (1-3):
-              </label>
-              <input
-                type="text"
-                value={numFrames}
-                onChange={handleFramesChange}
-                className="w-full p-3 border border-[#3d4f58] rounded-md bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid"
-                placeholder="Enter a number between 1-3"
-              />
-              {numFramesError && (
-                <p className="mt-1 text-red-500 text-sm cfont-euclid">{numFramesError}</p>
-              )}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
-                Page Reference Sequence (space-separated letters A-F):
-              </label>
-              <textarea
-                value={pageReferenceInput}
-                onChange={handlePageReferencesChange}
-                className="w-full p-3 border border-[#3d4f58] rounded-md bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid"
-                rows={3}
-                placeholder="e.g. A B C D A E"
-              />
-              {pageReferencesError && (
-                <p className="mt-1 text-red-500 text-sm cfont-euclid">{pageReferencesError}</p>
-              )}
-            </div>
-          </div>
-          
-          <div className="mt-6">
+          <div className="mt-6 mb-4">
             <div className="mb-4 pl-2">
               <div className="text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">Control Mode:</div>
               <div className="flex gap-4">
@@ -476,7 +442,7 @@ export default function App() {
                         )}
                       </div>
                     </div>
-                    <span className="cfont-euclid text-sm text-[#f9fbfa] ml-2">Manual Control</span>
+                    <span className="cfont-euclid text-sm text-[#f9fbfa] ml-2">Manual</span>
                   </div>
                 </label>
                 
@@ -496,7 +462,7 @@ export default function App() {
                         )}
                       </div>
                     </div>
-                    <span className="cfont-euclid text-sm text-[#f9fbfa] ml-2">Automatic Control</span>
+                    <span className="cfont-euclid text-sm text-[#f9fbfa] ml-2">Automatic</span>
                   </div>
                 </label>
               </div>
@@ -507,7 +473,7 @@ export default function App() {
                 <button
                   onClick={prevStep}
                   disabled={!hasStarted || currentStep <= 0 || !!numFramesError || !!pageReferencesError}
-                  className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 cursor-pointer rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   <ChevronLeft className="h-3 w-3" />
                   Previous
@@ -517,7 +483,7 @@ export default function App() {
                   ref={configureButtonRef}
                   onClick={nextStep}
                   disabled={hasStarted && currentStep >= fifoSteps.length - 1 || !!numFramesError || !!pageReferencesError}
-                  className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#71f6ba] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  className="bg-[#001e2b] cursor-pointer text-sm hover:bg-[#002b3e] cfont-euclid text-[#71f6ba] py-2 px-4 rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   {!hasStarted ? "Start" : "Next"}
                   {!hasStarted ? <Play className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
@@ -527,7 +493,7 @@ export default function App() {
                   <button
                     onClick={resetAnimation}
                     disabled={!!numFramesError || !!pageReferencesError}
-                    className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="bg-[#001e2b] cursor-pointer text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                   >
                     <RefreshCw className="h-3 w-3" />
                     Reset
@@ -539,7 +505,7 @@ export default function App() {
                 <button
                   ref={configureButtonRef}
                   onClick={toggleAnimation}
-                  className={`py-2 px-4 rounded-md border cfont-euclid border-[#3d4f58] bg-[#001e2b] hover:bg-[#002b3e] text-${
+                  className={`py-2 px-4 cursor-pointer rounded-xl border cfont-euclid border-[#3d4f58] bg-[#001e2b] hover:bg-[#002b3e] text-${
                     isRunning ? "red-500" : "[#71f6ba]"
                   } flex items-center gap-1 text-sm`}
                 >
@@ -561,7 +527,7 @@ export default function App() {
                 {hasStarted && (
                   <button
                     onClick={resetAnimation}
-                    className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58] flex items-center gap-1"
+                    className="bg-[#001e2b] text-sm cursor-pointer hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-xl border border-[#3d4f58] flex items-center gap-1"
                   >
                     <RefreshCw className="h-3 w-3" />
                     Reset
@@ -585,6 +551,39 @@ export default function App() {
               </div>
             )}
           </div>
+          <div className="flex flex-col gap-4 pl-2 pr-2">
+            <div>
+              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
+                Number of Frames (1-3):
+              </label>
+              <input
+                type="text"
+                value={numFrames}
+                onChange={handleFramesChange}
+                className="w-full p-3 border border-[#3d4f58] rounded-xl bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid"
+                placeholder="Enter a number between 1-3"
+              />
+              {numFramesError && (
+                <p className="mt-1 text-red-500 text-sm cfont-euclid">{numFramesError}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
+                Page Reference Sequence (space-separated letters A-F):
+              </label>
+              <textarea
+                value={pageReferenceInput}
+                onChange={handlePageReferencesChange}
+                className="w-full p-3 border border-[#3d4f58] rounded-xl bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid"
+                rows={3}
+                placeholder="e.g. A B C D A E"
+              />
+              {pageReferencesError && (
+                <p className="mt-1 text-red-500 text-sm cfont-euclid">{pageReferencesError}</p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Statistics */}
@@ -596,44 +595,48 @@ export default function App() {
           
           {fifoSteps.length > 0 ? (
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
-                <h3 className="text-lg cfont-cooper font-normal text-red-400 flex items-center gap-1">
+              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
+                <h3 className="text-md md:text-lg md:hidden cfont-cooper font-normal text-red-400 flex items-center gap-1">
+                  <AlertCircle className="h-4 w-4" />
+                  Pg. Faults
+                </h3>
+                <h3 className="text-md md:text-lg md:flex cfont-cooper font-normal text-red-400 hidden items-center gap-1">
                   <AlertCircle className="h-4 w-4" />
                   Page Faults
                 </h3>
-                <p className="text-3xl font-bold text-red-500 cfont-euclid">
+                <p className="text-2xl md:text-3xl font-bold text-red-500 cfont-euclid">
                   {faultCount}
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
-                <h3 className="text-lg cfont-cooper font-normal text-green-400 flex items-center gap-1">
+              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
+                <h3 className="text-md md:text-lg cfont-cooper font-normal text-green-400 flex items-center gap-1">
                   <CheckCircle className="h-4 w-4" />
                   Page Hits
                 </h3>
-                <p className="text-3xl font-bold text-green-500 cfont-euclid">
+                <p className="text-2xl md:text-3xl font-bold text-green-500 cfont-euclid">
                   {hitCount}
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
-                <h3 className="text-lg cfont-cooper font-normal text-blue-400 flex items-center gap-1">
+              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
+                <h3 className="text-md md:text-lg cfont-cooper font-normal text-blue-400 flex items-center gap-1">
                   <Activity className="h-4 w-4" />
-                  Hit Ratio
+                  Hit Rate
                 </h3>
-                <p className="text-3xl font-bold text-blue-500 cfont-euclid">
+                <p className="text-2xl md:text-3xl font-bold text-blue-500 cfont-euclid">
                   {hasStarted && (hitCount + faultCount) > 0 ? 
                     ((hitCount / (hitCount + faultCount)) * 100).toFixed(2) + "%" : 
                     "0.00%"}
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
-                <h3 className="text-lg cfont-cooper font-normal text-yellow-400 flex items-center gap-1">
+              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
+                <h3 className="text-md md:text-lg cfont-cooper font-normal text-yellow-400 flex items-center gap-1">
                   <Activity className="h-4 w-4" />
-                  Fault Ratio
+                  Fault Rate
                 </h3>
-                <p className="text-3xl font-bold text-yellow-500 cfont-euclid">
+                <p className="text-2xl md:text-3xl font-bold text-yellow-500 cfont-euclid">
                   {hasStarted && (hitCount + faultCount) > 0 ? 
                     ((faultCount / (hitCount + faultCount)) * 100).toFixed(2) + "%" : 
                     "0.00%"}
@@ -645,7 +648,7 @@ export default function App() {
                 <h3 className="text-lg cfont-cooper font-normal text-purple-400 mb-2">Performance Summary</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-400 cfont-euclid">Total References:</span>
+                    <span className="text-gray-400 cfont-euclid">Tot. References:</span>
                     <span className="ml-2 text-[#f9fbfa] cfont-euclid">
                       {hasStarted ? Math.min(currentStep + 1, pageReferences.length) : 0}
                       /{pageReferences.length}
