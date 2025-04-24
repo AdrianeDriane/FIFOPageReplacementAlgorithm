@@ -506,27 +506,28 @@ export default function App() {
               <div className="flex gap-3 pl-2">
                 <button
                   onClick={prevStep}
-                  disabled={!hasStarted || currentStep <= 0}
+                  disabled={!hasStarted || currentStep <= 0 || !!numFramesError || !!pageReferencesError}
                   className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   <ChevronLeft className="h-3 w-3" />
                   Previous
                 </button>
-                
+
                 <button
                   ref={configureButtonRef}
                   onClick={nextStep}
-                  disabled={hasStarted && currentStep >= fifoSteps.length - 1}
+                  disabled={hasStarted && currentStep >= fifoSteps.length - 1 || !!numFramesError || !!pageReferencesError}
                   className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#71f6ba] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   {!hasStarted ? "Start" : "Next"}
                   {!hasStarted ? <Play className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
                 </button>
-                
+
                 {hasStarted && (
                   <button
                     onClick={resetAnimation}
-                    className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58] flex items-center gap-1"
+                    disabled={!!numFramesError || !!pageReferencesError}
+                    className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                   >
                     <RefreshCw className="h-3 w-3" />
                     Reset
