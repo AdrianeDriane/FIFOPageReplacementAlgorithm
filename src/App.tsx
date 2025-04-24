@@ -267,7 +267,7 @@ export default function App() {
                         key={stepIdx} 
                         className={`w-12 h-12 flex-shrink-0 flex items-center justify-center transition-all duration-300
                           ${isCurrentStep ? "bg-gray-700" : "bg-gray-800"}
-                          ${showContent && frameValue !== null ? "border-2 rounded-md" : "border border-dashed"}
+                          ${showContent && frameValue !== null ? "border-[1.5px] rounded-md " : "border border-dashed"}
                           ${showContent && isNewlyAdded ? "border-red-500" : 
                             showContent && frameValue !== null ? "border-[#f9fbfa]" : "border-gray-600"}
                         `}
@@ -345,185 +345,184 @@ export default function App() {
       
       <div className="flex w-[60rem] h-full gap-6">
       {/* Configuration */}
-      <div className="bg-gray-800 w-[60%] p-6 rounded-lg border border-green-700 shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-green-400">Configuration</h2>
-        <div className="flex flex-col gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Number of Frames (2-5):
-            </label>
-            <input
-              type="text"
-              value={numFrames}
-              onChange={handleFramesChange}
-              className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200 focus:border-green-500 focus:outline-none"
-              placeholder="Enter a number between 2-5"
-            />
-            {numFramesError && (
-              <p className="mt-1 text-red-500 text-sm">{numFramesError}</p>
-            )}
+        <div className="bg-[#001e2b] w-[60%] p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+          <h2 className="text-xl font-normal cfont-cooper mb-4 text-[#71f6ba]">Configuration</h2>
+          <div className="flex flex-col gap-6 pl-2">
+            <div>
+              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
+                Number of Frames (2-5):
+              </label>
+              <input
+                type="text"
+                value={numFrames}
+                onChange={handleFramesChange}
+                className="w-full p-2 border border-[#3d4f58] rounded-md bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none"
+                placeholder="Enter a number between 2-5"
+              />
+              {numFramesError && (
+                <p className="mt-1 text-red-500 text-sm cfont-euclid">{numFramesError}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
+                Page Reference Sequence (space-separated letters A-G):
+              </label>
+              <textarea
+                value={pageReferenceInput}
+                onChange={handlePageReferencesChange}
+                className="w-full p-2 border border-[#3d4f58] rounded-md bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none"
+                rows={3}
+                placeholder="e.g. A B C D A E"
+              />
+              {pageReferencesError && (
+                <p className="mt-1 text-red-500 text-sm cfont-euclid">{pageReferencesError}</p>
+              )}
+            </div>
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Page Reference Sequence (space-separated letters A-G):
-            </label>
-            <textarea
-              value={pageReferenceInput}
-              onChange={handlePageReferencesChange}
-              className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200 focus:border-green-500 focus:outline-none"
-              rows={3}
-              placeholder="e.g. A B C D A E"
-            />
-            {pageReferencesError && (
-              <p className="mt-1 text-red-500 text-sm">{pageReferencesError}</p>
+          <div className="mt-6">
+            <div className="mb-4 pl-2">
+              <div className="text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">Control Mode:</div>
+              <div className="flex gap-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    value="manual"
+                    checked={controlMode === 'manual'}
+                    onChange={() => setControlMode('manual')}
+                    className="mr-2 text-[#71f6ba] focus:ring-[#71f6ba]"
+                  />
+                  <span className="cfont-euclid text-sm text-[#f9fbfa]">Manual Control</span>
+                </label>
+                
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    value="automatic"
+                    checked={controlMode === 'automatic'}
+                    onChange={() => setControlMode('automatic')}
+                    className="mr-2 text-[#71f6ba] focus:ring-[#71f6ba]"
+                  />
+                  <span className="cfont-euclid text-sm text-[#f9fbfa]">Automatic Control</span>
+                </label>
+              </div>
+            </div>
+            
+            {controlMode === 'manual' ? (
+              <div className="flex gap-3 pl-2">
+                <button
+                  onClick={prevStep}
+                  disabled={!hasStarted || currentStep <= 0}
+                  className="bg-[#001e2b] hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                
+                <button
+                  ref={configureButtonRef}
+                  onClick={nextStep}
+                  disabled={hasStarted && currentStep >= fifoSteps.length - 1}
+                  className="bg-[#001e2b] hover:bg-[#002b3e] cfont-euclid text-[#71f6ba] py-2 px-4 rounded-md border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {!hasStarted ? "Start" : "Next"}
+                </button>
+                
+                {hasStarted && (
+                  <button
+                    onClick={resetAnimation}
+                    className="bg-[#001e2b] hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58]"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-wrap pl-2 gap-3 items-center">
+                <button
+                  ref={configureButtonRef}
+                  onClick={toggleAnimation}
+                  className={`py-2 px-4 rounded-md border cfont-euclid border-[#3d4f58] bg-[#001e2b] hover:bg-[#002b3e] text-${
+                    isRunning ? "red-500" : "[#71f6ba]"
+                  }`}
+                >
+                  {!hasStarted ? "Start" : isRunning ? "Pause" : "Play"}
+                </button>
+                
+                {hasStarted && (
+                  <button
+                    onClick={resetAnimation}
+                    className="bg-[#001e2b] hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-md border border-[#3d4f58]"
+                  >
+                    Reset
+                  </button>
+                )}
+                
+                <div className="flex items-center ml-2">
+                  <label className="text-sm font-medium cfont-euclid text-[#f9fbfa] mr-2">
+                    Speed:
+                  </label>
+                  <select
+                    value={animationSpeed}
+                    onChange={(e) => setAnimationSpeed(parseInt(e.target.value))}
+                    className="p-2 border cfont-euclid border-[#3d4f58] rounded-md bg-[#001e2b] text-[#f9fbfa]"
+                  >
+                    <option value="2000">Slow</option>
+                    <option value="1000">Normal</option>
+                    <option value="500">Fast</option>
+                  </select>
+                </div>
+              </div>
             )}
           </div>
         </div>
-        
-        <div className="mt-6">
-          <div className="mb-4">
-            <div className="text-sm font-medium text-gray-300 mb-2">Control Mode:</div>
-            <div className="flex gap-4">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  value="manual"
-                  checked={controlMode === 'manual'}
-                  onChange={() => setControlMode('manual')}
-                  className="mr-2 text-green-500 focus:ring-green-500"
-                />
-                <span>Manual Control</span>
-              </label>
-              
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  value="automatic"
-                  checked={controlMode === 'automatic'}
-                  onChange={() => setControlMode('automatic')}
-                  className="mr-2 text-green-500 focus:ring-green-500"
-                />
-                <span>Automatic Control</span>
-              </label>
-            </div>
-          </div>
+
+        {/* Statistics */}
+        <div className="bg-[#001e2b] w-[40%] p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+          <h2 className="text-xl font-normal cfont-cooper mb-4 text-[#71f6ba]">Statistics</h2>
           
-          {controlMode === 'manual' ? (
-            <div className="flex gap-3">
-              <button
-                onClick={prevStep}
-                disabled={!hasStarted || currentStep <= 0}
-                className="bg-gray-700 hover:bg-gray-600 text-gray-200 py-2 px-4 rounded-md border border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
+          {fifoSteps.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
+              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
+                <h3 className="text-lg font-normal cfont-cooper text-red-400">Page Faults</h3>
+                <p className="text-3xl font-bold text-red-500 cfont-euclid">
+                  {hasStarted ? Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'fault').length) : 0}
+                </p>
+              </div>
               
-              <button
-                ref={configureButtonRef}
-                onClick={nextStep}
-                disabled={hasStarted && currentStep >= fifoSteps.length - 1}
-                className="bg-green-700 hover:bg-green-600 text-gray-200 py-2 px-4 rounded-md border border-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {!hasStarted ? "Start" : "Next"}
-              </button>
+              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
+                <h3 className="text-lg font-normal cfont-cooper text-green-400">Page Hits</h3>
+                <p className="text-3xl font-bold text-green-500 cfont-euclid">
+                  {hasStarted ? Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'hit').length) : 0}
+                </p>
+              </div>
               
-              {hasStarted && (
-                <button
-                  onClick={resetAnimation}
-                  className="bg-yellow-700 hover:bg-yellow-600 text-gray-200 py-2 px-4 rounded-md border border-yellow-800"
-                >
-                  Reset
-                </button>
-              )}
+              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
+                <h3 className="text-lg font-normal cfont-cooper text-blue-400">Hit Ratio</h3>
+                <p className="text-3xl font-bold text-blue-500 cfont-euclid">
+                  {hasStarted && currentStep >= 0 ? 
+                    ((Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'hit').length) / 
+                      (Math.min(currentStep + 1, currentStep + 1))) * 100).toFixed(2) + "%" : 
+                    "0.00%"}
+                </p>
+              </div>
+              
+              <div className="bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
+                <h3 className="text-lg font-normal cfont-cooper text-yellow-400">Fault Ratio</h3>
+                <p className="text-3xl font-bold text-yellow-500 cfont-euclid">
+                  {hasStarted && currentStep >= 0 ? 
+                    ((Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'fault').length) / 
+                      (Math.min(currentStep + 1, currentStep + 1))) * 100).toFixed(2) + "%" : 
+                    "0.00%"}
+                </p>
+              </div>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-3 items-center">
-              <button
-                ref={configureButtonRef}
-                onClick={toggleAnimation}
-                className={`py-2 px-4 rounded-md border ${
-                  isRunning 
-                    ? "bg-red-700 hover:bg-red-600 border-red-800 text-gray-200" 
-                    : "bg-green-700 hover:bg-green-600 border-green-800 text-gray-200"
-                }`}
-              >
-                {!hasStarted ? "Start" : isRunning ? "Pause" : "Play"}
-              </button>
-              
-              {hasStarted && (
-                <button
-                  onClick={resetAnimation}
-                  className="bg-yellow-700 hover:bg-yellow-600 text-gray-200 py-2 px-4 rounded-md border border-yellow-800"
-                >
-                  Reset
-                </button>
-              )}
-              
-              <div className="flex items-center ml-2">
-                <label className="text-sm font-medium text-gray-300 mr-2">
-                  Speed:
-                </label>
-                <select
-                  value={animationSpeed}
-                  onChange={(e) => setAnimationSpeed(parseInt(e.target.value))}
-                  className="p-2 border border-gray-600 rounded-md bg-gray-700 text-gray-200"
-                >
-                  <option value="2000">Slow</option>
-                  <option value="1000">Normal</option>
-                  <option value="500">Fast</option>
-                </select>
-              </div>
+            <div className="text-center py-4 text-[#f9fbfa] cfont-euclid">
+              No data available yet. Configure valid inputs to see statistics.
             </div>
           )}
         </div>
-      </div>
-      {/* Statistics */}
-      <div className="bg-gray-800 w-[40%] p-6 rounded-lg border border-green-700 shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-green-400">Statistics</h2>
-        
-        {fifoSteps.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-            <div className="bg-gray-700 p-4 rounded-lg border border-red-700">
-              <h3 className="text-lg font-medium text-red-400">Page Faults</h3>
-              <p className="text-3xl font-bold text-red-500">
-                {hasStarted ? Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'fault').length) : 0}
-              </p>
-            </div>
-            
-            <div className="bg-gray-700 p-4 rounded-lg border border-green-700">
-              <h3 className="text-lg font-medium text-green-400">Page Hits</h3>
-              <p className="text-3xl font-bold text-green-500">
-                {hasStarted ? Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'hit').length) : 0}
-              </p>
-            </div>
-            
-            <div className="bg-gray-700 p-4 rounded-lg border border-blue-700">
-              <h3 className="text-lg font-medium text-blue-400">Hit Ratio</h3>
-              <p className="text-3xl font-bold text-blue-500">
-                {hasStarted && currentStep >= 0 ? 
-                  ((Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'hit').length) / 
-                    (Math.min(currentStep + 1, currentStep + 1))) * 100).toFixed(2) + "%" : 
-                  "0.00%"}
-              </p>
-            </div>
-            
-            <div className="bg-gray-700 p-4 rounded-lg border border-yellow-700">
-              <h3 className="text-lg font-medium text-yellow-400">Fault Ratio</h3>
-              <p className="text-3xl font-bold text-yellow-500">
-                {hasStarted && currentStep >= 0 ? 
-                  ((Math.min(currentStep + 1, fifoSteps.filter(step => step.status === 'fault').length) / 
-                    (Math.min(currentStep + 1, currentStep + 1))) * 100).toFixed(2) + "%" : 
-                  "0.00%"}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-4 text-gray-500">
-            No data available yet. Configure valid inputs to see statistics.
-          </div>
-        )}
-      </div>
       </div>
       
       
