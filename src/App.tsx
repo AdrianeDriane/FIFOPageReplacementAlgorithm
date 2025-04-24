@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Settings, Award, AlertCircle, CheckCircle, Clock, Activity } from 'lucide-react';
+import Dock from "./components/Dock";
 
 type Page = string | null;
 type PageStatus = 'hit' | 'fault' | 'none';
@@ -238,7 +239,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
+    <div className="flex flex-col items-center justify-center pb-30 p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
       <h1 className="text-3xl cfont-cooper font-normal md:text-center mb-8 text-[#f9fbfa] flex items-center gap-8">
         <Activity className="text-[#71f6ba] h-13 w-13" />
         FIFO Page Replacement Algorithm Visualizer
@@ -678,6 +679,7 @@ export default function App() {
           )}
         </div>
       </div>
+      <Dock/>
     </div>
   );
 }
