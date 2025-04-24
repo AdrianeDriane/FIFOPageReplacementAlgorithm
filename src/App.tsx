@@ -217,24 +217,24 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col p-6 mx-auto bg-gray-900 min-h-screen font-mono text-gray-200">
-      <h1 className="text-3xl cfont-cooper font-bold text-center mb-8 text-green-500">
+    <div className="flex flex-col items-center justify-center p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
+      <h1 className="text-3xl cfont-cooper font-normal text-center mb-8 text-[#f9fbfa]">
         FIFO Page Replacement Algorithm Visualizer
       </h1>
       
       {/* Visualization Timeline */}
-      <div className="bg-gray-800 p-6 rounded-lg border border-green-700 shadow-md mb-8">
-        <h2 className="text-xl font-semibold cfont-euclid mb-4 text-green-400">FIFO Visualization Timeline</h2>
+      <div className="bg-[#001e2b] p-6 rounded-4xl w-[60rem] border border-[#3d4f58] shadow-2xl mb-8">
+        <h2 className="text-xl font-normal cfont-cooper mb-4 text-[#71f6ba]">FIFO Visualization Timeline</h2>
         
         {pageReferences.length > 0 ? (
           <div className="overflow-x-auto">
-            <div style={{ minWidth: `${Math.max(800, pageReferences.length * 50)}px` }} className="pb-2">
-              <div className="flex mb-2 gap-2">
-                <div className="w-24 flex-shrink-0 font-bold">Reference</div>
+            <div style={{ minWidth: `${Math.max(800, pageReferences.length * 50)}px` }} className="pb-2 pl-2">
+              <div className="flex mb-2 gap-2 items-center">
+                <div className="w-24 flex-shrink-0 font-normal cfont-euclid text-sm">Reference</div>
                 {pageReferences.map((page, idx) => (
                   <div 
                     key={idx} 
-                    className={`w-12 flex-shrink-0 text-center ${
+                    className={`w-12 flex-shrink-0 text-center cfont-euclid ${
                       hasStarted && idx === currentStep ? "bg-gray-700 rounded-t-md border-t border-l border-r border-green-500" : ""
                     }`}
                   >
@@ -245,8 +245,8 @@ export default function App() {
               
               {/* Frame rows */}
               {Array.from({ length: parseInt(numFrames) }).map((_, frameIdx) => (
-                <div key={frameIdx} className="flex mb-2 gap-2">
-                  <div className="w-24 flex-shrink-0 font-bold">Frame {frameIdx + 1}</div>
+                <div key={frameIdx} className="flex mb-2 gap-2 items-center">
+                  <div className="w-24 text-sm flex-shrink-0 font-medium text-[#71f6ba] cfont-euclid">Frame {frameIdx + 1}</div>
                   {pageReferences.map((_, stepIdx) => {
                     // Only show content for steps that have already been processed
                     const isCurrentStep = hasStarted && stepIdx === currentStep;
@@ -269,7 +269,7 @@ export default function App() {
                           ${isCurrentStep ? "bg-gray-700" : "bg-gray-800"}
                           ${showContent && frameValue !== null ? "border-2 rounded-md" : "border border-dashed"}
                           ${showContent && isNewlyAdded ? "border-red-500" : 
-                            showContent && frameValue !== null ? "border-green-600" : "border-gray-600"}
+                            showContent && frameValue !== null ? "border-[#f9fbfa]" : "border-gray-600"}
                         `}
                       >
                         <span className={`
@@ -285,8 +285,8 @@ export default function App() {
               ))}
               
               {/* Results row */}
-              <div className="flex mt-2 gap-2">
-                <div className="w-24 flex-shrink-0 font-bold">Result</div>
+              <div className="flex mt-2 items-center gap-2">
+                <div className="w-24 flex-shrink-0 text-sm cfont-euclid">Result</div>
                 {pageReferences.map((_, idx) => {
                   const isCurrentStep = hasStarted && idx === currentStep;
                   const showResult = hasStarted && idx <= currentStep;
@@ -316,14 +316,14 @@ export default function App() {
             {/* Current step indicator */}
             <div className="mt-4 text-center font-medium">
               {hasStarted && currentStep >= 0 && currentStep < fifoSteps.length ? (
-                <div className="text-lg">
+                <div className="text-sm cfont-euclid">
                   Step {currentStep + 1}: Reference page {fifoSteps[currentStep].pageReference} - 
                   <span className={fifoSteps[currentStep].status === 'fault' ? "text-red-500" : "text-green-500"}>
                     {" "}{fifoSteps[currentStep].status === 'fault' ? "Page Fault" : "Page Hit"}
                   </span>
                 </div>
               ) : (
-                <div className="text-lg text-green-400">
+                <div className="text-sm cfont-euclid text-[#f9fbfa]">
                   <button 
                     onClick={handleConfigureTextClick}
                     className="text-green-300 hover:text-green-100 underline focus:outline-none"
@@ -342,10 +342,12 @@ export default function App() {
         )}
       </div>
       
-      {/* Configuration Section */}
-      <div className="bg-gray-800 p-6 rounded-lg border border-green-700 shadow-md mb-8">
+      
+      <div className="flex w-[60rem] h-full gap-6">
+      {/* Configuration */}
+      <div className="bg-gray-800 w-[60%] p-6 rounded-lg border border-green-700 shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-green-400">Configuration</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Number of Frames (2-5):
@@ -476,13 +478,12 @@ export default function App() {
           )}
         </div>
       </div>
-      
-      {/* Statistics Section */}
-      <div className="bg-gray-800 p-6 rounded-lg border border-green-700 shadow-md">
+      {/* Statistics */}
+      <div className="bg-gray-800 w-[40%] p-6 rounded-lg border border-green-700 shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-green-400">Statistics</h2>
         
         {fifoSteps.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
             <div className="bg-gray-700 p-4 rounded-lg border border-red-700">
               <h3 className="text-lg font-medium text-red-400">Page Faults</h3>
               <p className="text-3xl font-bold text-red-500">
@@ -523,6 +524,10 @@ export default function App() {
           </div>
         )}
       </div>
+      </div>
+      
+      
+      
     </div>
   );
 }
