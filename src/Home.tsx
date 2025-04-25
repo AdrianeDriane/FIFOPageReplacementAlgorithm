@@ -255,13 +255,13 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center pb-30 sm:pb-30 p-2 sm:p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
-      <h1 className="text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8">
+      <h1 className="opacity-0 slide-from-left text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8">
         <Activity className="text-[#71f6ba] h-10 w-10 sm:h-13 sm:w-13" />
         <span className="text-center">FIFO Page Replacement Algorithm Visualizer</span>
       </h1>
       
       {/* Visualization Timeline */}
-      <div className="bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-4 sm:mb-8">
+      <div className="opacity-0 slide-from-left slide-delay-1 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-4 sm:mb-8">
         <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
           <Clock className="h-5 w-5" />
           FIFO Visualization Timeline
@@ -433,7 +433,7 @@ export default function Home() {
       {/* Second Section */}
       <div className="flex flex-col md:flex-row w-full md:w-[60rem] gap-4 sm:gap-6">
         {/* Configuration */}
-        <div className="bg-[#001e2b] w-full md:w-[60%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+        <div className="opacity-0 slide-from-left slide-delay-2 bg-[#001e2b] w-full md:w-[60%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-3 sm:mb-4 text-[#71f6ba] flex items-center gap-2">
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             Configuration
@@ -603,7 +603,7 @@ export default function Home() {
         </div>
 
         {/* Statistics */}
-        <div className="bg-[#001e2b] w-full md:w-[40%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+        <div className="opacity-0 slide-from-left slide-delay-3 bg-[#001e2b] w-full md:w-[40%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-3 sm:mb-4 text-[#71f6ba] flex items-center gap-2">
             <Award className="h-4 w-4 sm:h-5 sm:w-5" />
             Statistics
