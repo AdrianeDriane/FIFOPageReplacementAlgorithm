@@ -2,8 +2,11 @@ import { useRef, useState, useEffect } from "react";
 import { MouseProvider } from "../providers/mouse/MouseProvider";
 import { DockContext } from "../hooks/useDock";
 import DockItem from "./DockItem";
+import { useNavigate } from "react-router-dom";
+import { Home, Info, BookOpen, GitFork } from "lucide-react";
 
 export default function Dock() {
+  const navigate = useNavigate();
   const ref = useRef<HTMLDivElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [width, setWidth] = useState<number | undefined>();
@@ -14,9 +17,24 @@ export default function Dock() {
     }
   }, []);
 
-  const dockItemsDesktop = Array.from({ length: 6 }, (_, index) => (
-    <DockItem key={index}>.</DockItem>
-  ));
+  const navigationItems = [
+    { path: "/", icon: <Home size={24} color="#f9fbfa"/> },
+    { path: "/about", icon: <Info size={24} color="#f9fbfa"/> },
+    { path: "/quiz", icon: <BookOpen size={24} color="#f9fbfa"/> },
+    { path: "/flowchart", icon: <GitFork size={24} color="#f9fbfa"/> },
+  ];
+
+  const dockItemsDesktop = [
+    ...navigationItems.map((item, index) => (
+      <DockItem key={index} onClick={() => navigate(item.path)}>
+        {item.icon}
+      </DockItem>
+    )),
+    <div key="separator" className="w-[1px] h-11 bg-[#3d4f58] mr-2.5" />,
+    ...Array.from({ length: 2 }, (_, index) => (
+      <DockItem key={index + 4}>.</DockItem>
+    )),
+  ];
 
   const dockItemsMobile = Array.from({ length: 4 }, (_, index) => (
     <DockItem key={index}>.</DockItem>
