@@ -14,7 +14,7 @@ export default function Dock() {
     }
   }, []);
 
-  const dockItemsDesktop = Array.from({ length: 8 }, (_, index) => (
+  const dockItemsDesktop = Array.from({ length: 6 }, (_, index) => (
     <DockItem key={index}>.</DockItem>
   ));
 
