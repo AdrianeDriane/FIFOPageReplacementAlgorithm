@@ -185,6 +185,14 @@ export default function Home() {
     } else if (currentStep < fifoSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
+    
+    // Focus scroll
+    if (timelineContainerRef.current) {
+      timelineContainerRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center'
+      });
+    }
   };
 
   const prevStep = () => {
@@ -200,6 +208,13 @@ export default function Home() {
     if (isRunning && currentStep < fifoSteps.length - 1) {
       animationTimer = setTimeout(() => {
         setCurrentStep(currentStep + 1);
+        // Focus scroll
+        if (timelineContainerRef.current) {
+          timelineContainerRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center'
+          });
+        }
       }, animationSpeed);
     } else if (currentStep >= fifoSteps.length - 1) {
       setIsRunning(false);

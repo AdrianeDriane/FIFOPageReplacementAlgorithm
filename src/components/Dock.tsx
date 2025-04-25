@@ -83,9 +83,13 @@ export default function Dock({
     ] : [])
   ];
 
-  const dockItemsMobile = Array.from({ length: 4 }, (_, index) => (
-    <DockItem key={index}>.</DockItem>
-  ));
+  const dockItemsMobile = [
+    ...navigationItems.map((item, index) => (
+      <DockItem key={index} onClick={() => navigate(item.path)}>
+        {item.icon}
+      </DockItem>
+    )),
+  ];
 
   return (
     <MouseProvider>
