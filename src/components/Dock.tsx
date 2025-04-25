@@ -3,9 +3,33 @@ import { MouseProvider } from "../providers/mouse/MouseProvider";
 import { DockContext } from "../hooks/useDock";
 import DockItem from "./DockItem";
 import { useNavigate } from "react-router-dom";
-import { Home, Info, BookOpen, GitFork } from "lucide-react";
+import { Home, Info, BookOpen, GitFork, ChevronLeft, ChevronRight, Play, Pause, RefreshCw } from "lucide-react";
 
-export default function Dock() {
+interface DockProps {
+  page?: string;
+  controlMode?: 'manual' | 'automatic';
+  onPrevStep?: () => void;
+  onNextStep?: () => void;
+  onReset?: () => void;
+  onTogglePlay?: () => void;
+  isRunning?: boolean;
+  hasStarted?: boolean;
+  currentStep?: number;
+  totalSteps?: number;
+}
+
+export default function Dock({
+  page,
+  controlMode,
+  onPrevStep,
+  onNextStep,
+  onReset,
+  onTogglePlay,
+  isRunning,
+  hasStarted,
+  currentStep,
+  totalSteps
+}: DockProps) {
   const navigate = useNavigate();
   const ref = useRef<HTMLDivElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -24,16 +48,39 @@ export default function Dock() {
     { path: "/flowchart", icon: <GitFork size={24} color="#f9fbfa"/> },
   ];
 
+  const controlItems = controlMode === 'manual' ? [
+    <DockItem key="prev" onClick={onPrevStep} >
+      <ChevronLeft 
+        size={24} 
+        color={(!hasStarted || currentStep === undefined || currentStep <= 0) ? "#3d4f58" : "#f9fbfa"} 
+      />
+    </DockItem>,
+    <DockItem key="next" onClick={onNextStep} >
+      {!hasStarted ? <Play size={24} color="#71f6ba" /> : 
+       <ChevronRight 
+         size={24} 
+         color={currentStep === undefined || currentStep >= (totalSteps || 0) - 1 ? "#3d4f58" : "#f9fbfa"} 
+       />}
+    </DockItem>
+  ] : [
+    <DockItem key="playPause" onClick={onTogglePlay}>
+      {!hasStarted ? <Play size={24} color="#71f6ba" /> : 
+       isRunning ? <Pause size={24} color="#f9fbfa" /> : <Play size={24} color="#f9fbfa" />}
+    </DockItem>,
+    <DockItem key="reset" onClick={onReset} >
+      <RefreshCw size={24} color={!hasStarted ? "#3d4f58" : "#f9fbfa"} />
+    </DockItem>
+  ];
   const dockItemsDesktop = [
     ...navigationItems.map((item, index) => (
       <DockItem key={index} onClick={() => navigate(item.path)}>
         {item.icon}
       </DockItem>
     )),
-    <div key="separator" className="w-[1px] h-11 bg-[#3d4f58] mr-2.5" />,
-    ...Array.from({ length: 2 }, (_, index) => (
-      <DockItem key={index + 4}>.</DockItem>
-    )),
+    ...(page === "home" ? [
+      <div key="separator" className="w-[1px] h-11 bg-[#3d4f58] mr-2.5" />,
+      ...controlItems
+    ] : [])
   ];
 
   const dockItemsMobile = Array.from({ length: 4 }, (_, index) => (

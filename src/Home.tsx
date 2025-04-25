@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Settings, Award, AlertCircle, CheckCircle, Clock, Activity } from 'lucide-react';
+import Dock from './components/Dock';
 
 type Page = string | null;
 type PageStatus = 'hit' | 'fault' | 'none';
@@ -15,7 +16,7 @@ export default function Home() {
   // Configuration states
   const [numFrames, setNumFrames] = useState<string>("3");
   const [numFramesError, setNumFramesError] = useState<string>("");
-  const [pageReferenceInput, setPageReferenceInput] = useState<string>("A B C D A E A F D E A E D");
+  const [pageReferenceInput, setPageReferenceInput] = useState<string>("A B C D B E A D E B C");
   const [pageReferencesError, setPageReferencesError] = useState<string>("");
   const [pageReferences, setPageReferences] = useState<string[]>([]);
   const [controlMode, setControlMode] = useState<'manual' | 'automatic'>('manual');
@@ -678,6 +679,19 @@ export default function Home() {
           )}
         </div>
       </div>
+      
+      <Dock 
+        page="home"
+        controlMode={controlMode}
+        onPrevStep={prevStep}
+        onNextStep={nextStep}
+        onReset={resetAnimation}
+        onTogglePlay={toggleAnimation}
+        isRunning={isRunning}
+        hasStarted={hasStarted}
+        currentStep={currentStep}
+        totalSteps={fifoSteps.length}
+      />
     </div>
   );
 }
