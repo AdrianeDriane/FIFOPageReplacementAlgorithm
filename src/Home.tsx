@@ -239,15 +239,15 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center pb-30 p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
-      <h1 className="md:text-3xl cfont-cooper font-normal md:text-center mb-8 text-[#f9fbfa] flex items-center gap-8">
-        <Activity className="text-[#71f6ba] h-13 w-13" />
-        FIFO Page Replacement Algorithm Visualizer
+    <div className="flex flex-col items-center justify-center pb-30 sm:pb-30 p-2 sm:p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
+      <h1 className="text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8">
+        <Activity className="text-[#71f6ba] h-10 w-10 sm:h-13 sm:w-13" />
+        <span className="text-center">FIFO Page Replacement Algorithm Visualizer</span>
       </h1>
       
       {/* Visualization Timeline */}
-      <div className="bg-[#001e2b] p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-8">
-        <h2 className="md:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
+      <div className="bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-4 sm:mb-8">
+        <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
           <Clock className="h-5 w-5" />
           FIFO Visualization Timeline
         </h2>
@@ -256,25 +256,25 @@ export default function Home() {
           <div className="overflow-hidden">
             <div className="flex flex-nowrap">
               {/* First column - headers */}
-              <div className="flex-none w-24 gap-2">
-                <div className="h-12 flex items-center">
-                  <div className="w-full text-sm cfont-euclid font-medium text-[#f9fbfa]">
+              <div className="flex-none w-16 sm:w-24 gap-2">
+                <div className="h-10 sm:h-12 flex items-center">
+                  <div className="w-full text-xs sm:text-sm cfont-euclid font-medium text-[#f9fbfa]">
                     Reference
                   </div>
                 </div>
                 
                 {/* Frame labels */}
                 {Array.from({ length: parseInt(numFrames) >= 1 && parseInt(numFrames) <= 3 ? parseInt(numFrames) : 0 }).map((_, frameIdx) => (
-                  <div key={frameIdx} className="h-12 flex items-center">
-                    <div className="w-full text-sm cfont-euclid font-medium text-[#71f6ba]">
+                  <div key={frameIdx} className="h-10 sm:h-12 flex items-center">
+                    <div className="w-full text-xs sm:text-sm cfont-euclid font-medium text-[#71f6ba]">
                       Frame {frameIdx + 1}
                     </div>
                   </div>
                 ))}
                 
                 {/* Result label */}
-                <div className="h-12 flex items-center">
-                  <div className="w-full text-sm cfont-euclid">Result</div>
+                <div className="h-10 sm:h-12 flex items-center">
+                  <div className="w-full text-xs sm:text-sm cfont-euclid">Result</div>
                 </div>
               </div>
               
@@ -282,11 +282,11 @@ export default function Home() {
               <div className="flex-grow overflow-x-auto custom-scrollbar" ref={timelineContainerRef}>
                 <div className="flex flex-col w-full gap-2"> {/* Use flex-col to stack rows vertically */}
                   {/* Reference row */}
-                  <div className="flex h-12">
+                  <div className="flex h-10 sm:h-12">
                     {pageReferences.map((page, idx) => (
                       <div 
                         key={idx} 
-                        className={`w-12 mr-2 flex-shrink-0 flex items-center justify-center cfont-euclid ${
+                        className={`w-8 sm:w-12 mr-1 sm:mr-2 flex-shrink-0 flex items-center justify-center cfont-euclid ${
                           hasStarted && idx === currentStep ? "bg-gray-700 rounded-t-md border-t border-l border-r border-green-500" : ""
                         }`}
                       >
@@ -297,7 +297,7 @@ export default function Home() {
                   
                   {/* Frame rows */}
                   {Array.from({ length: parseInt(numFrames) >= 1 && parseInt(numFrames) <= 3 ? parseInt(numFrames) : 0 }).map((_, frameIdx) => (
-                    <div key={frameIdx} className="flex h-12">
+                    <div key={frameIdx} className="flex h-10 sm:h-12">
                       {pageReferences.map((_, stepIdx) => {
                         // Only show content for steps that have already been processed
                         const isCurrentStep = hasStarted && stepIdx === currentStep;
@@ -320,7 +320,7 @@ export default function Home() {
                         return (
                           <div 
                             key={stepIdx} 
-                            className={`w-12 h-12 mr-2 flex-shrink-0 flex items-center justify-center transition-all duration-500
+                            className={`w-8 sm:w-12 h-10 sm:h-12 mr-1 sm:mr-2 flex-shrink-0 flex items-center justify-center transition-all duration-500
                               ${isCurrentStep ? "dragging" : ""}
                               ${showContent && frameValue !== null ? "border-[1px] rounded-md " : "border border-dashed"}
                               ${showContent && isNewlyAdded ? "border-red-500" : 
@@ -329,7 +329,7 @@ export default function Home() {
                             `}
                           >
                             {showContent && frameValue !== null && (
-                              <span className={`cfont-euclid
+                              <span className={`cfont-euclid text-xs sm:text-base
                                 ${isNewlyAdded ? "text-red-400 font-bold" : 
                                   isHit ? "text-green-400 font-bold" :
                                   "text-[#f9fbfa]"}
@@ -338,7 +338,7 @@ export default function Home() {
                               </span>
                             )}
                             {(!showContent || frameValue === null) && (
-                              <span className="text-gray-600 cfont-euclid">-</span>
+                              <span className="text-gray-600 cfont-euclid text-xs sm:text-base">-</span>
                             )}
                           </div>
                         );
@@ -347,7 +347,7 @@ export default function Home() {
                   ))}
                   
                   {/* Results row */}
-                  <div className="flex h-12">
+                  <div className="flex h-10 sm:h-12">
                     {pageReferences.map((_, idx) => {
                       const isCurrentStep = hasStarted && idx === currentStep;
                       const showResult = hasStarted && idx <= currentStep;
@@ -360,7 +360,7 @@ export default function Home() {
                       return (
                         <div 
                           key={idx} 
-                          className={`w-12 mr-2 flex-shrink-0 flex items-center justify-center cfont-euclid ${
+                          className={`w-8 sm:w-12 mr-1 sm:mr-2 flex-shrink-0 flex items-center justify-center cfont-euclid ${
                             isCurrentStep ? "bg-gray-700 rounded-b-md border-b border-l border-r border-green-500" : ""
                           } ${
                             showResult && status === 'fault' ? "text-red-500 font-bold" : 
@@ -370,11 +370,11 @@ export default function Home() {
                           {showResult ? (
                             status === 'fault' ? (
                               <span className="flex justify-center">
-                                <AlertCircle className="h-4 w-4 text-red-500" />
+                                <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
                               </span>
                             ) : (
                               <span className="flex justify-center">
-                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
                               </span>
                             )
                           ) : ''}
@@ -389,14 +389,14 @@ export default function Home() {
             {/* Current step indicator */}
             <div className="mt-4 text-center font-medium">
               {hasStarted && currentStep >= 0 && currentStep < fifoSteps.length ? (
-                <div className="text-sm cfont-euclid">
+                <div className="text-xs sm:text-sm cfont-euclid">
                   Step {currentStep + 1} of {fifoSteps.length}: Reference page {fifoSteps[currentStep].pageReference} - 
                   <span className={fifoSteps[currentStep].status === 'fault' ? "text-red-500" : "text-green-500"}>
                     {" "}{fifoSteps[currentStep].status === 'fault' ? "Page Fault" : "Page Hit"}
                   </span>
                 </div>
               ) : (
-                <div className="text-sm cfont-euclid text-[#f9fbfa]">
+                <div className="text-xs sm:text-sm cfont-euclid text-[#f9fbfa]">
                   <button 
                     onClick={handleConfigureTextClick}
                     className="text-green-300 hover:text-green-100 underline focus:outline-none cursor-pointer"
@@ -409,23 +409,23 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-500 cfont-euclid">
+          <div className="text-center py-4 sm:py-8 text-gray-500 cfont-euclid text-xs sm:text-sm">
             Configure valid inputs to see the visualization
           </div>
         )}
       </div>
       
       {/* Second Section */}
-      <div className="flex flex-col md:flex-row w-full md:w-[60rem] gap-6">
+      <div className="flex flex-col md:flex-row w-full md:w-[60rem] gap-4 sm:gap-6">
         {/* Configuration */}
-        <div className="bg-[#001e2b] w-full md:w-[60%] p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
-          <h2 className="text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
-            <Settings className="h-5 w-5" />
+        <div className="bg-[#001e2b] w-full md:w-[60%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+          <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-3 sm:mb-4 text-[#71f6ba] flex items-center gap-2">
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             Configuration
           </h2>
-          <div className="mt-6 mb-4">
-            <div className="mb-4 pl-2">
-              <div className="text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">Control Mode:</div>
+          <div className="mt-4 sm:mt-6 mb-3 sm:mb-4">
+            <div className="mb-3 sm:mb-4 pl-1 sm:pl-2">
+              <div className="text-xs sm:text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">Control Mode:</div>
               <div className="flex gap-4">
                 <label className="relative flex items-center cursor-pointer">
                   <div className="flex items-center">
@@ -443,7 +443,7 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                    <span className="cfont-euclid text-sm text-[#f9fbfa] ml-2">Manual</span>
+                    <span className="cfont-euclid text-xs sm:text-sm text-[#f9fbfa] ml-2">Manual</span>
                   </div>
                 </label>
                 
@@ -463,18 +463,18 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                    <span className="cfont-euclid text-sm text-[#f9fbfa] ml-2">Automatic</span>
+                    <span className="cfont-euclid text-xs sm:text-sm text-[#f9fbfa] ml-2">Automatic</span>
                   </div>
                 </label>
               </div>
             </div>
             
             {controlMode === 'manual' ? (
-              <div className="flex gap-3 pl-2">
+              <div className="flex flex-wrap gap-2 sm:gap-3 pl-1 sm:pl-2">
                 <button
                   onClick={prevStep}
                   disabled={!hasStarted || currentStep <= 0 || !!numFramesError || !!pageReferencesError}
-                  className="bg-[#001e2b] text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 cursor-pointer rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  className="bg-[#001e2b] text-xs sm:text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-1 sm:py-2 px-2 sm:px-4 cursor-pointer rounded-lg sm:rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   <ChevronLeft className="h-3 w-3" />
                   Previous
@@ -484,7 +484,7 @@ export default function Home() {
                   ref={configureButtonRef}
                   onClick={nextStep}
                   disabled={hasStarted && currentStep >= fifoSteps.length - 1 || !!numFramesError || !!pageReferencesError}
-                  className="bg-[#001e2b] cursor-pointer text-sm hover:bg-[#002b3e] cfont-euclid text-[#71f6ba] py-2 px-4 rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  className="bg-[#001e2b] cursor-pointer text-xs sm:text-sm hover:bg-[#002b3e] cfont-euclid text-[#71f6ba] py-1 sm:py-2 px-2 sm:px-4 rounded-lg sm:rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                 >
                   {!hasStarted ? "Start" : "Next"}
                   {!hasStarted ? <Play className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
@@ -494,7 +494,7 @@ export default function Home() {
                   <button
                     onClick={resetAnimation}
                     disabled={!!numFramesError || !!pageReferencesError}
-                    className="bg-[#001e2b] cursor-pointer text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="bg-[#001e2b] cursor-pointer text-xs sm:text-sm hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-1 sm:py-2 px-2 sm:px-4 rounded-lg sm:rounded-xl border border-[#3d4f58] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                   >
                     <RefreshCw className="h-3 w-3" />
                     Reset
@@ -502,13 +502,13 @@ export default function Home() {
                 )}
               </div>
             ) : (
-              <div className="flex flex-wrap pl-2 gap-3 items-center">
+              <div className="flex flex-wrap pl-1 sm:pl-2 gap-2 sm:gap-3 items-center">
                 <button
                   ref={configureButtonRef}
                   onClick={toggleAnimation}
-                  className={`py-2 px-4 cursor-pointer rounded-xl border cfont-euclid border-[#3d4f58] bg-[#001e2b] hover:bg-[#002b3e] text-${
+                  className={`py-1 sm:py-2 px-2 sm:px-4 cursor-pointer rounded-lg sm:rounded-xl border cfont-euclid border-[#3d4f58] bg-[#001e2b] hover:bg-[#002b3e] text-${
                     isRunning ? "red-500" : "[#71f6ba]"
-                  } flex items-center gap-1 text-sm`}
+                  } flex items-center gap-1 text-xs sm:text-sm`}
                 >
                   {!hasStarted ? (
                     <>
@@ -528,21 +528,21 @@ export default function Home() {
                 {hasStarted && (
                   <button
                     onClick={resetAnimation}
-                    className="bg-[#001e2b] text-sm cursor-pointer hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-2 px-4 rounded-xl border border-[#3d4f58] flex items-center gap-1"
+                    className="bg-[#001e2b] text-xs sm:text-sm cursor-pointer hover:bg-[#002b3e] cfont-euclid text-[#f9fbfa] py-1 sm:py-2 px-2 sm:px-4 rounded-lg sm:rounded-xl border border-[#3d4f58] flex items-center gap-1"
                   >
                     <RefreshCw className="h-3 w-3" />
                     Reset
                   </button>
                 )}
                 
-                <div className="flex items-center ml-2">
-                  <label className="text-sm font-medium cfont-euclid text-[#f9fbfa] mr-2">
+                <div className="flex items-center mt-2 sm:mt-0 sm:ml-2 w-full sm:w-auto">
+                  <label className="text-xs sm:text-sm font-medium cfont-euclid text-[#f9fbfa] mr-2">
                     Speed:
                   </label>
                   <select
                     value={animationSpeed}
                     onChange={(e) => setAnimationSpeed(parseInt(e.target.value))}
-                    className="p-2 border text-sm cfont-euclid border-[#3d4f58] rounded-md bg-[#001e2b] text-[#f9fbfa]"
+                    className="p-1 sm:p-2 border text-xs sm:text-sm cfont-euclid border-[#3d4f58] rounded-md bg-[#001e2b] text-[#f9fbfa]"
                   >
                     <option value="2000">Slow</option>
                     <option value="1000">Normal</option>
@@ -552,96 +552,96 @@ export default function Home() {
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-4 pl-2 pr-2">
+          <div className="flex flex-col gap-3 sm:gap-4 pl-1 sm:pl-2 pr-1 sm:pr-2">
             <div>
-              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
+              <label className="block text-xs sm:text-sm font-medium cfont-euclid text-[#f9fbfa] mb-1 sm:mb-2">
                 Number of Frames (1-3):
               </label>
               <input
                 type="text"
                 value={numFrames}
                 onChange={handleFramesChange}
-                className="w-full p-3 border border-[#3d4f58] rounded-xl bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid"
+                className="w-full p-2 sm:p-3 border border-[#3d4f58] rounded-lg sm:rounded-xl bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid text-xs sm:text-sm"
                 placeholder="Enter a number between 1-3"
               />
               {numFramesError && (
-                <p className="mt-1 text-red-500 text-sm cfont-euclid">{numFramesError}</p>
+                <p className="mt-1 text-red-500 text-xs sm:text-sm cfont-euclid">{numFramesError}</p>
               )}
             </div>
             
             <div>
-              <label className="block text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">
+              <label className="block text-xs sm:text-sm font-medium cfont-euclid text-[#f9fbfa] mb-1 sm:mb-2">
                 Page Reference Sequence (space-separated letters A-F):
               </label>
               <textarea
                 value={pageReferenceInput}
                 onChange={handlePageReferencesChange}
-                className="w-full p-3 border border-[#3d4f58] rounded-xl bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid"
-                rows={3}
+                className="w-full p-2 sm:p-3 border border-[#3d4f58] rounded-lg sm:rounded-xl bg-[#001e2b] text-[#f9fbfa] focus:border-[#71f6ba] focus:outline-none cfont-euclid text-xs sm:text-sm"
+                rows={2}
                 placeholder="e.g. A B C D A E"
               />
               {pageReferencesError && (
-                <p className="mt-1 text-red-500 text-sm cfont-euclid">{pageReferencesError}</p>
+                <p className="mt-1 text-red-500 text-xs sm:text-sm cfont-euclid">{pageReferencesError}</p>
               )}
             </div>
           </div>
         </div>
 
         {/* Statistics */}
-        <div className="bg-[#001e2b] w-full md:w-[40%] p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
-          <h2 className="text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
-            <Award className="h-5 w-5" />
+        <div className="bg-[#001e2b] w-full md:w-[40%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+          <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-3 sm:mb-4 text-[#71f6ba] flex items-center gap-2">
+            <Award className="h-4 w-4 sm:h-5 sm:w-5" />
             Statistics
           </h2>
           
           {fifoSteps.length > 0 ? (
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
-                <h3 className="text-md md:text-lg md:hidden cfont-cooper font-normal text-red-400 flex items-center gap-1">
-                  <AlertCircle className="h-4 w-4" />
+            <div className="grid grid-cols-2 gap-3 sm:gap-6">
+              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+                <h3 className="text-sm md:text-lg md:hidden cfont-cooper font-normal text-red-400 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                   Faults
                 </h3>
-                <h3 className="text-md md:text-lg md:flex cfont-cooper font-normal text-red-400 hidden items-center gap-1">
-                  <AlertCircle className="h-4 w-4" />
+                <h3 className="text-sm md:text-lg md:flex cfont-cooper font-normal text-red-400 hidden items-center gap-1">
+                  <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                   Page Faults
                 </h3>
-                <p className="text-2xl md:text-3xl font-bold text-red-500 cfont-euclid">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-red-500 cfont-euclid">
                   {faultCount}
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
-                <h3 className="text-md md:text-lg md:hidden cfont-cooper font-normal text-green-400 flex items-center gap-1">
-                  <CheckCircle className="h-4 w-4" />
+              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+                <h3 className="text-sm md:text-lg md:hidden cfont-cooper font-normal text-green-400 flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                   Hits
                 </h3>
-                <h3 className="text-md md:text-lg cfont-cooper md:flex font-normal text-green-400 hidden items-center gap-1">
-                  <CheckCircle className="h-4 w-4" />
+                <h3 className="text-sm md:text-lg cfont-cooper md:flex font-normal text-green-400 hidden items-center gap-1">
+                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                   Page Hits
                 </h3>
-                <p className="text-2xl md:text-3xl font-bold text-green-500 cfont-euclid">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-500 cfont-euclid">
                   {hitCount}
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
-                <h3 className="text-md md:text-lg cfont-cooper font-normal text-blue-400 flex items-center gap-1">
-                  <Activity className="h-4 w-4" />
+              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+                <h3 className="text-sm md:text-lg cfont-cooper font-normal text-blue-400 flex items-center gap-1">
+                  <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
                   Hit Rate
                 </h3>
-                <p className="text-2xl md:text-3xl font-bold text-blue-500 cfont-euclid">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-500 cfont-euclid">
                   {hasStarted && (hitCount + faultCount) > 0 ? 
                     ((hitCount / (hitCount + faultCount)) * 100).toFixed(2) + "%" : 
                     "0.00%"}
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
-                <h3 className="text-md md:text-lg cfont-cooper font-normal text-yellow-400 flex items-center gap-1">
-                  <Activity className="h-4 w-4" />
+              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+                <h3 className="text-sm md:text-lg cfont-cooper font-normal text-yellow-400 flex items-center gap-1">
+                  <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
                   Fault Rate
                 </h3>
-                <p className="text-2xl md:text-3xl font-bold text-yellow-500 cfont-euclid">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-500 cfont-euclid">
                   {hasStarted && (hitCount + faultCount) > 0 ? 
                     ((faultCount / (hitCount + faultCount)) * 100).toFixed(2) + "%" : 
                     "0.00%"}
@@ -649,41 +649,42 @@ export default function Home() {
               </div>
               
               {/* Additional statistics */}
-              <div className="col-span-2 bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
-                <h3 className="text-lg cfont-cooper font-normal text-purple-400 mb-2">Performance Summary</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              <div className="col-span-2 bg-[#001e2b] p-2 sm:p-4 rounded-md border border-[#3d4f58]">
+                <h3 className="text-md sm:text-lg cfont-cooper font-normal text-purple-400 mb-1 sm:mb-2">Performance Summary</h3>
+                <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
                   <div>
                     <span className="text-gray-400 cfont-euclid">Tot. References:</span>
-                    <span className="ml-2 text-[#f9fbfa] cfont-euclid">
+                    <span className="ml-1 sm:ml-2 text-[#f9fbfa] cfont-euclid">
                       {hasStarted ? Math.min(currentStep + 1, pageReferences.length) : 0}
                       /{pageReferences.length}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-400 cfont-euclid">Memory Frames:</span>
-                    <span className="ml-2 text-[#f9fbfa] cfont-euclid">{numFrames}</span>
+                    <span className="ml-1 sm:ml-2 text-[#f9fbfa] cfont-euclid">{numFrames}</span>
                   </div>
                   <div>
                     <span className="text-gray-400 cfont-euclid">Completed:</span>
-                    <span className="ml-2 text-[#f9fbfa] cfont-euclid">
+                    <span className="ml-1 sm:ml-2 text-[#f9fbfa] cfont-euclid">
                       {hasStarted ? Math.round((Math.min(currentStep + 1, pageReferences.length) / pageReferences.length) * 100) : 0}%
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-400 cfont-euclid">Algorithm:</span>
-                    <span className="ml-2 text-[#f9fbfa] cfont-euclid">FIFO</span>
+                    <span className="ml-1 sm:ml-2 text-[#f9fbfa] cfont-euclid">FIFO</span>
                   </div>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="text-center py-4 text-[#f9fbfa] cfont-euclid">
+            <div className="text-center py-2 sm:py-4 text-[#f9fbfa] cfont-euclid text-xs sm:text-sm">
               No data available yet. Configure valid inputs to see statistics.
             </div>
           )}
         </div>
       </div>
       
+      {/* Mobile-optimized Dock */}
       <Dock 
         page="home"
         controlMode={controlMode}
