@@ -240,14 +240,14 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center pb-30 p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
-      <h1 className="text-3xl cfont-cooper font-normal md:text-center mb-8 text-[#f9fbfa] flex items-center gap-8">
+      <h1 className="md:text-3xl cfont-cooper font-normal md:text-center mb-8 text-[#f9fbfa] flex items-center gap-8">
         <Activity className="text-[#71f6ba] h-13 w-13" />
         FIFO Page Replacement Algorithm Visualizer
       </h1>
       
       {/* Visualization Timeline */}
       <div className="bg-[#001e2b] p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-8">
-        <h2 className="text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
+        <h2 className="md:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
           <Clock className="h-5 w-5" />
           FIFO Visualization Timeline
         </h2>
@@ -599,7 +599,7 @@ export default function Home() {
               <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
                 <h3 className="text-md md:text-lg md:hidden cfont-cooper font-normal text-red-400 flex items-center gap-1">
                   <AlertCircle className="h-4 w-4" />
-                  Pg. Faults
+                  Faults
                 </h3>
                 <h3 className="text-md md:text-lg md:flex cfont-cooper font-normal text-red-400 hidden items-center gap-1">
                   <AlertCircle className="h-4 w-4" />
@@ -611,7 +611,11 @@ export default function Home() {
               </div>
               
               <div className="bg-[#001e2b] p-4 rounded-xl border border-[#3d4f58]">
-                <h3 className="text-md md:text-lg cfont-cooper font-normal text-green-400 flex items-center gap-1">
+                <h3 className="text-md md:text-lg md:hidden cfont-cooper font-normal text-green-400 flex items-center gap-1">
+                  <CheckCircle className="h-4 w-4" />
+                  Hits
+                </h3>
+                <h3 className="text-md md:text-lg cfont-cooper md:flex font-normal text-green-400 hidden items-center gap-1">
                   <CheckCircle className="h-4 w-4" />
                   Page Hits
                 </h3>
@@ -647,7 +651,7 @@ export default function Home() {
               {/* Additional statistics */}
               <div className="col-span-2 bg-[#001e2b] p-4 rounded-md border border-[#3d4f58]">
                 <h3 className="text-lg cfont-cooper font-normal text-purple-400 mb-2">Performance Summary</h3>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   <div>
                     <span className="text-gray-400 cfont-euclid">Tot. References:</span>
                     <span className="ml-2 text-[#f9fbfa] cfont-euclid">
