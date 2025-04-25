@@ -1,8 +1,8 @@
-
+import Dock from "./components/Dock";
 
 function Quiz() {
     return (
-      <div>Quiz</div>
+      <Dock/>
     )
   }
   

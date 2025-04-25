@@ -1,8 +1,8 @@
-
+import Dock from "./components/Dock";
 
 function Flowchart() {
     return (
-      <div>Flowchart</div>
+      <Dock/>
     )
   }
   
