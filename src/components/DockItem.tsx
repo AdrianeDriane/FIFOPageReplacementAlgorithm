@@ -15,15 +15,17 @@ const INCREASE_AMP_BY = 35;
 interface DockItemProps {
   children: React.ReactNode;
   onClick?: () => void;
+  label?: string;
 }
 
-export default function DockItem({ children, onClick }: DockItemProps) {
+export default function DockItem({ children, onClick, label }: DockItemProps) {
   const ref = useRef<HTMLButtonElement | null>(null);
   const mouse = useMouse();
   const dock = useDock();
   const [dockCenterX, setDockCenterX] = useState<number | null>(null);
   const [isDockItemOpened, setIsDockItemOpened] = useState(false);
   const controls = useAnimationControls();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const dimension = useTransform(mouse.position.x, (mousePositionX: number) => {
     if (dockCenterX === null || dock.width === undefined) return DOCK_ITEM_SIZE;
@@ -70,6 +72,8 @@ export default function DockItem({ children, onClick }: DockItemProps) {
   return (
     <motion.li
       className="relative"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
       onClick={() => {
         if (!isDockItemOpened) {
           setIsDockItemOpened(true);
@@ -80,6 +84,11 @@ export default function DockItem({ children, onClick }: DockItemProps) {
         }
       }}
     >
+      {showTooltip && label && (
+        <div className="absolute cfont-euclid -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#112733] rounded-lg text-xs text-[#f9fbfa] whitespace-nowrap ring-1 ring-white/10">
+          {label}
+        </div>
+      )}
       <motion.button
         ref={ref}
         className="flex flex-none select-none items-center justify-center rounded-3xl

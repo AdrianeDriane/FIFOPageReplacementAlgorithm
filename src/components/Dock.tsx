@@ -42,20 +42,20 @@ export default function Dock({
   }, []);
 
   const navigationItems = [
-    { path: "/", icon: <Home size={24} color="#f9fbfa"/> },
-    { path: "/about", icon: <Info size={24} color="#f9fbfa"/> },
-    { path: "/quiz", icon: <BookOpen size={24} color="#f9fbfa"/> },
-    { path: "/flowchart", icon: <GitFork size={24} color="#f9fbfa"/> },
+    { path: "/", icon: <Home size={24} color="#f9fbfa"/>, label: "Home" },
+    { path: "/about", icon: <Info size={24} color="#f9fbfa"/>, label: "About" },
+    { path: "/quiz", icon: <BookOpen size={24} color="#f9fbfa"/>, label: "Quiz" },
+    { path: "/flowchart", icon: <GitFork size={24} color="#f9fbfa"/>, label: "Flowchart" },
   ];
 
   const controlItems = controlMode === 'manual' ? [
-    <DockItem key="prev" onClick={onPrevStep} >
+    <DockItem key="prev" onClick={onPrevStep} label="Previous">
       <ChevronLeft 
         size={24} 
         color={(!hasStarted || currentStep === undefined || currentStep <= 0) ? "#3d4f58" : "#f9fbfa"} 
       />
     </DockItem>,
-    <DockItem key="next" onClick={onNextStep} >
+    <DockItem key="next" onClick={onNextStep} label={!hasStarted ? "Start" : "Next"}>
       {!hasStarted ? <Play size={24} color="#71f6ba" /> : 
        <ChevronRight 
          size={24} 
@@ -63,17 +63,21 @@ export default function Dock({
        />}
     </DockItem>
   ] : [
-    <DockItem key="playPause" onClick={onTogglePlay}>
+    <DockItem 
+      key="playPause" 
+      onClick={onTogglePlay} 
+      label={!hasStarted ? "Start" : isRunning ? "Pause" : "Play"}
+    >
       {!hasStarted ? <Play size={24} color="#71f6ba" /> : 
        isRunning ? <Pause size={24} color="#f9fbfa" /> : <Play size={24} color="#f9fbfa" />}
     </DockItem>,
-    <DockItem key="reset" onClick={onReset} >
+    <DockItem key="reset" onClick={onReset} label="Reset">
       <RefreshCw size={24} color={!hasStarted ? "#3d4f58" : "#f9fbfa"} />
     </DockItem>
   ];
   const dockItemsDesktop = [
     ...navigationItems.map((item, index) => (
-      <DockItem key={index} onClick={() => navigate(item.path)}>
+      <DockItem key={index} onClick={() => navigate(item.path)} label={item.label}>
         {item.icon}
       </DockItem>
     )),
@@ -85,7 +89,7 @@ export default function Dock({
 
   const dockItemsMobile = [
     ...navigationItems.map((item, index) => (
-      <DockItem key={index} onClick={() => navigate(item.path)}>
+      <DockItem key={index} onClick={() => navigate(item.path)} label={item.label}>
         {item.icon}
       </DockItem>
     )),
