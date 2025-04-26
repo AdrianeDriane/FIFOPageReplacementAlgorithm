@@ -58,7 +58,7 @@ const About = () => {
   return (
     <div className="flex flex-col items-center justify-center pb-30 sm:pb-30 p-2 sm:p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
       <h1 className="opacity-0 slide-from-left text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8">
-        <BookOpen className="text-[#71f6ba] h-10 w-10 sm:h-13 sm:w-13" />
+        <Activity className="text-[#71f6ba] h-10 w-10 sm:h-13 sm:w-13" />
         <span className="text-center">About FIFO Page Replacement Algorithm</span>
       </h1>
       
@@ -332,14 +332,14 @@ const About = () => {
             <div className="mb-4">
               <h3 className="text-sm sm:text-base cfont-cooper font-normal mb-2 text-[#f9fbfa]">GitHub Repository:</h3>
               <div className="flex">
-                <a href="https://github.com/AdrianeDriane/FIFOPageReplacementAlgorithm" className="text-[#71f6ba] hover:text-[#8fffd4] text-xs sm:text-sm cfont-euclid underline">View the Source Code</a>
+                <a href="https://github.com/AdrianeDriane/FIFOPageReplacementAlgorithm" target="_blank" className="text-[#71f6ba] hover:text-[#8fffd4] text-xs sm:text-sm cfont-euclid underline">View the Source Code</a>
               </div>
             </div>
             <div>
               <h3 className="text-sm sm:text-base cfont-cooper font-normal mb-2 text-[#f9fbfa]">Personal Note:</h3>
               <p className="text-xs sm:text-sm cfont-euclid text-[#f9fbfa] italic">
-                I built this visualizer as part of a school project, but also because I know how tough it
-                can be to really understand abstract OS concepts like page replacement. I hope this tool
+                We built this visualizer as part of a school project, but also because we know how tough it
+                can be to really understand abstract OS concepts like page replacement. We hope this tool
                 helps other students and self-learners grasp FIFO faster, in a more interactive and visual
                 way.
               </p>
@@ -399,7 +399,7 @@ const About = () => {
               FIFO Page Replacement Algorithm Visualizer
             </p>
             <p className="text-xs cfont-euclid text-gray-400 mt-2">
-              Created with ❤️ for CS students everywhere
+              Created with ❤️ for IT/CS students everywhere
             </p>
           </div>
         </div>
