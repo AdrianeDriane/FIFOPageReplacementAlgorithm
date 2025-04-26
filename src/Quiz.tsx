@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Brain, Target, Award, CheckCircle, XCircle, Play, RefreshCw, ArrowRight, ChevronDown, Cpu, ThumbsUp } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Dock from './components/Dock';
+import { useNavigate } from 'react-router-dom';
 
 interface QuizQuestion {
   id: number;
@@ -150,6 +151,8 @@ const Quiz = () => {
   ]);
 
   const currentQuestion = questions[currentQuestionIndex];
+
+  const navigate = useNavigate();
 
   // Handle animation steps for page hit/fault questions
   useEffect(() => {
@@ -622,7 +625,7 @@ const Quiz = () => {
             Try Again
           </button>
           <button
-            onClick={() => window.location.href = '/about'}
+            onClick={() => navigate('/about')}
             className="flex-1 cursor-pointer p-3 bg-[#71f6ba] hover:bg-[#60e5a9] text-[#001e2b] font-medium cfont-euclid rounded-lg flex items-center justify-center gap-2 transition-colors"
           >
             <ArrowRight className="h-4 w-4" />
