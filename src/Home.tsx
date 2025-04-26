@@ -261,7 +261,7 @@ export default function Home() {
       </h1>
       
       {/* Visualization Timeline */}
-      <div className="opacity-0 slide-from-left slide-delay-1 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-4 sm:mb-8">
+      <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-1 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-4 sm:mb-8">
         <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
           <Clock className="h-5 w-5" />
           FIFO Visualization Timeline
@@ -433,7 +433,7 @@ export default function Home() {
       {/* Second Section */}
       <div className="flex flex-col md:flex-row w-full md:w-[60rem] gap-4 sm:gap-6">
         {/* Configuration */}
-        <div className="opacity-0 slide-from-left slide-delay-2 bg-[#001e2b] w-full md:w-[60%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+        <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-2 bg-[#001e2b] w-full md:w-[60%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-3 sm:mb-4 text-[#71f6ba] flex items-center gap-2">
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             Configuration
@@ -603,7 +603,7 @@ export default function Home() {
         </div>
 
         {/* Statistics */}
-        <div className="opacity-0 slide-from-left slide-delay-3 bg-[#001e2b] w-full md:w-[40%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+        <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-3 bg-[#001e2b] w-full md:w-[40%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-3 sm:mb-4 text-[#71f6ba] flex items-center gap-2">
             <Award className="h-4 w-4 sm:h-5 sm:w-5" />
             Statistics
@@ -611,7 +611,7 @@ export default function Home() {
           
           {fifoSteps.length > 0 ? (
             <div className="grid grid-cols-2 gap-3 sm:gap-6">
-              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+              <div className="transform transition-transform duration-300 hover:-translate-y-1 bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
                 <h3 className="text-sm md:text-lg md:hidden cfont-cooper font-normal text-red-400 flex items-center gap-1">
                   <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                   Faults
@@ -625,7 +625,7 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+              <div className="transform transition-transform duration-300 hover:-translate-y-1 bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
                 <h3 className="text-sm md:text-lg md:hidden cfont-cooper font-normal text-green-400 flex items-center gap-1">
                   <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                   Hits
@@ -639,7 +639,7 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+              <div className="transform transition-transform duration-300 hover:-translate-y-1 bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
                 <h3 className="text-sm md:text-lg cfont-cooper font-normal text-blue-400 flex items-center gap-1">
                   <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
                   Hit Rate
@@ -651,7 +651,7 @@ export default function Home() {
                 </p>
               </div>
               
-              <div className="bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
+              <div className="transform transition-transform duration-300 hover:-translate-y-1 bg-[#001e2b] p-2 sm:p-4 rounded-lg sm:rounded-xl border border-[#3d4f58]">
                 <h3 className="text-sm md:text-lg cfont-cooper font-normal text-yellow-400 flex items-center gap-1">
                   <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
                   Fault Rate
@@ -664,7 +664,7 @@ export default function Home() {
               </div>
               
               {/* Additional statistics */}
-              <div className="col-span-2 bg-[#001e2b] p-2 sm:p-4 rounded-md border border-[#3d4f58]">
+              <div className="transform transition-transform duration-300 hover:-translate-y-1 col-span-2 bg-[#001e2b] p-2 sm:p-4 rounded-md border border-[#3d4f58]">
                 <h3 className="text-md sm:text-lg cfont-cooper font-normal text-purple-400 mb-1 sm:mb-2">Performance Summary</h3>
                 <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
                   <div>

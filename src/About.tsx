@@ -1,7 +1,60 @@
-import { Activity, BookOpen, Brain, Target, FileQuestion, Users, Coffee, History, Wrench, MessageSquare } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Activity, BookOpen, RefreshCcwDot, Brain, Target, FileQuestion, Users, Coffee, History, Wrench, MessageSquare } from 'lucide-react';
 import Dock from './components/Dock';
 
 const About = () => {
+  // Animation states for Page Hit/Fault demonstration
+  const [faultAnimationStep, setFaultAnimationStep] = useState(0);
+  const [hitAnimationStep, setHitAnimationStep] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Control animations with improved timing
+  useEffect(() => {
+
+    const faultInterval = setInterval(() => {
+      setFaultAnimationStep((prev) => {
+        // If we're at step 3 (showing status message), set paused state
+        if (prev === 3) {
+          setIsPaused(true);
+          // After 2 seconds, unpause and reset to step 0
+          setTimeout(() => {
+            setIsPaused(false);
+          }, 1000);
+          return prev;
+        }
+        return prev >= 3 ? 0 : prev + 1;
+      });
+    }, 1000);
+
+    const hitInterval = setInterval(() => {
+      setHitAnimationStep((prev) => {
+        // If we're at step 3 (showing status message), set paused state
+        if (prev === 3) {
+          setIsPaused(true);
+          // After 2 seconds, unpause and reset to step 0
+          setTimeout(() => {
+            setIsPaused(false);
+          }, 1000);
+          return prev;
+        }
+        return prev >= 3 ? 0 : prev + 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(faultInterval);
+      clearInterval(hitInterval);
+    };
+  }, [isPaused]);
+
+  // Toggle animation on/off
+  const toggleAnimation = () => {
+    // Reset animation states if turning back on
+    setFaultAnimationStep(0);
+    setHitAnimationStep(0);
+    setIsPaused(false);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center pb-30 sm:pb-30 p-2 sm:p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
       <h1 className="opacity-0 slide-from-left text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8">
@@ -12,7 +65,7 @@ const About = () => {
       {/* Main content container */}
       <div className="w-full md:w-[60rem] space-y-6 sm:space-y-8">
         {/* What is FIFO section */}
-        <div className="opacity-0 slide-from-left slide-delay-1 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full border border-[#3d4f58] shadow-2xl">
+        <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-1 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full border border-[#3d4f58] shadow-2xl">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
             <Brain className="h-5 w-5" />
             What is FIFO (First-In-First-Out)?
@@ -24,68 +77,138 @@ const About = () => {
             the new one. It operates just like a queue: first in, first out.
           </p>
           
-          {/* Page Hit vs Page Fault visualization */}
+          {/* Page Hit vs Page Fault animated visualization */}
           <div className="bg-[#00162b] p-4 rounded-xl border border-[#3d4f58] mb-4">
-            <h3 className="text-sm sm:text-base cfont-cooper font-normal mb-3 text-[#71f6ba] flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              See It In Action: Page Hit vs Page Fault
-            </h3>
+            <div className="flex flex-col xs:flex-row justify-between items-center mb-3">
+              <h3 className="text-sm sm:text-base cfont-cooper font-normal text-[#71f6ba] flex items-center gap-2 mb-2 xs:mb-0">
+                <Activity className="h-4 w-4" />
+                See It In Action: Page Hit vs Page Fault
+              </h3>
+              <button 
+                onClick={toggleAnimation} 
+                className="text-xs sm:text-sm flex items-center justify-center cfont-euclid bg-[#001e2b] hover:bg-[#002b3e] py-1 px-2 rounded-lg border border-[#3d4f58] text-[#71f6ba]"
+              >
+                <RefreshCcwDot className="h-3 w-3 inline-block mr-1" />
+                Reset Animation
+              </button>
+            </div>
+            
             <div className="flex flex-col sm:flex-row justify-center gap-6 p-2">
-              {/* Page Fault illustration */}
-              <div className="bg-[#001e2b] p-3 rounded-lg border border-[#3d4f58] flex-1">
+              {/* Page Fault illustration - ANIMATED */}
+              <div className="bg-[#001e2b] p-3 rounded-lg border border-[#3d4f58] flex-1 mb-4 sm:mb-0">
                 <div className="text-center mb-2">
                   <span className="text-xs sm:text-sm cfont-euclid font-medium text-red-400">Page Fault</span>
                 </div>
-                <div className="flex justify-center items-center gap-3">
+                <div className="flex justify-center items-center gap-3 min-h-32">
                   <div className="flex flex-col gap-2">
-                    <div className="w-8 h-8 border border-[#f9fbfa] rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm">A</span>
+                    {/* Memory frames */}
+                    <div className={`w-8 h-8 border ${faultAnimationStep >= 1 ? 'border-[#f9fbfa]' : 'border-dashed border-gray-600'} rounded-md flex items-center justify-center transition-all duration-300`}>
+                      <span className="cfont-euclid text-xs sm:text-sm">{faultAnimationStep >= 1 ? 'A' : '-'}</span>
                     </div>
-                    <div className="w-8 h-8 border border-[#f9fbfa] rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm">B</span>
+                    <div className={`w-8 h-8 border ${faultAnimationStep >= 2 ? 'border-[#f9fbfa]' : 'border-dashed border-gray-600'} rounded-md flex items-center justify-center transition-all duration-300`}>
+                      <span className="cfont-euclid text-xs sm:text-sm">{faultAnimationStep >= 2 ? 'B' : '-'}</span>
                     </div>
-                    <div className="w-8 h-8 border border-red-500 rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm text-red-400 font-bold">C</span>
+                    <div className={`w-8 h-8 border ${
+                      faultAnimationStep >= 3 ? (faultAnimationStep === 3 ? 'border-2 border-red-500 animate-pulse' : 'border-[#f9fbfa]') : 'border-dashed border-gray-600'
+                    } rounded-md flex items-center justify-center transition-all duration-300`}>
+                      <span className={`cfont-euclid text-xs sm:text-sm ${faultAnimationStep === 3 ? 'text-red-400 font-bold' : ''}`}>
+                        {faultAnimationStep >= 3 ? (faultAnimationStep === 3 ? 'C' : 'D') : '-'}
+                      </span>
                     </div>
                   </div>
+                  
+                  {/* Animation of page reference and replacement */}
                   <div className="flex items-center">
-                    <div className="bg-[#001e2b] border border-dashed border-gray-600 w-8 h-8 rounded-md flex items-center justify-center">
-                      <span className="text-red-500 cfont-euclid text-xs sm:text-sm">D</span>
+                    {/* Incoming page reference */}
+                    <div className={`bg-[#001e2b] border ${
+                      faultAnimationStep === 3 ? 'border-red-500' : 'border-dashed border-gray-600'
+                    } w-8 h-8 rounded-md flex items-center justify-center transition-all duration-300 ${
+                      faultAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                    }`}>
+                      <span className="text-red-500 cfont-euclid text-xs sm:text-sm">C</span>
                     </div>
-                    <div className="text-red-500 mx-2">→</div>
-                    <div className="w-8 h-8 border border-red-500 rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm text-red-400 font-bold">D</span>
+                    
+                    {/* Arrow */}
+                    <div className={`text-red-500 mx-2 transition-opacity duration-300 ${
+                      faultAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                    }`}>→</div>
+                    
+                    {/* Result */}
+                    <div className={`w-8 h-8 border ${
+                      faultAnimationStep === 3 ? 'border-2 border-red-500 animate-pulse' : 'border-dashed border-gray-600'
+                    } rounded-md flex items-center justify-center transition-all duration-300 ${
+                      faultAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                    }`}>
+                      <span className="cfont-euclid text-xs sm:text-sm text-red-400 font-bold">
+                        {faultAnimationStep === 3 ? 'D' : ''}
+                      </span>
                     </div>
                   </div>
                 </div>
+                {/* Status message */}
+                <div className={`text-center mt-2 text-xs cfont-euclid transition-opacity duration-300 ${
+                  faultAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                }`}>
+                  <span className="text-red-400">Page fault: replaced oldest page (C) with D</span>
+                </div>
               </div>
               
-              {/* Page Hit illustration */}
+              {/* Page Hit illustration - ANIMATED */}
               <div className="bg-[#001e2b] p-3 rounded-lg border border-[#3d4f58] flex-1">
                 <div className="text-center mb-2">
                   <span className="text-xs sm:text-sm cfont-euclid font-medium text-green-400">Page Hit</span>
                 </div>
-                <div className="flex justify-center items-center gap-3">
+                <div className="flex justify-center items-center gap-3 min-h-32">
                   <div className="flex flex-col gap-2">
-                    <div className="w-8 h-8 border border-[#f9fbfa] rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm">A</span>
+                    {/* Memory frames */}
+                    <div className={`w-8 h-8 border ${hitAnimationStep >= 1 ? 'border-[#f9fbfa]' : 'border-dashed border-gray-600'} rounded-md flex items-center justify-center transition-all duration-300`}>
+                      <span className="cfont-euclid text-xs sm:text-sm">{hitAnimationStep >= 1 ? 'A' : '-'}</span>
                     </div>
-                    <div className="w-8 h-8 border border-green-500 rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm text-green-400 font-bold">B</span>
+                    <div className={`w-8 h-8 border ${
+                      hitAnimationStep >= 2 ? (hitAnimationStep === 3 ? 'border-2 border-green-500 animate-pulse' : 'border-[#f9fbfa]') : 'border-dashed border-gray-600'
+                    } rounded-md flex items-center justify-center transition-all duration-300`}>
+                      <span className={`cfont-euclid text-xs sm:text-sm ${hitAnimationStep === 3 ? 'text-green-400 font-bold' : ''}`}>
+                        {hitAnimationStep >= 2 ? 'B' : '-'}
+                      </span>
                     </div>
-                    <div className="w-8 h-8 border border-[#f9fbfa] rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm">C</span>
+                    <div className={`w-8 h-8 border ${hitAnimationStep >= 3 ? 'border-[#f9fbfa]' : 'border-dashed border-gray-600'} rounded-md flex items-center justify-center transition-all duration-300`}>
+                      <span className="cfont-euclid text-xs sm:text-sm">{hitAnimationStep >= 3 ? 'C' : '-'}</span>
                     </div>
                   </div>
+                  
+                  {/* Animation of page reference and hit */}
                   <div className="flex items-center">
-                    <div className="bg-[#001e2b] border border-green-500 w-8 h-8 rounded-md flex items-center justify-center">
+                    {/* Incoming page reference */}
+                    <div className={`bg-[#001e2b] border ${
+                      hitAnimationStep === 3 ? 'border-green-500' : 'border-dashed border-gray-600'
+                    } w-8 h-8 rounded-md flex items-center justify-center transition-all duration-300 ${
+                      hitAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                    }`}>
                       <span className="text-green-500 cfont-euclid text-xs sm:text-sm">B</span>
                     </div>
-                    <div className="text-green-500 mx-2">→</div>
-                    <div className="w-8 h-8 border border-green-500 rounded-md flex items-center justify-center">
-                      <span className="cfont-euclid text-xs sm:text-sm text-green-400 font-bold">B</span>
+                    
+                    {/* Arrow */}
+                    <div className={`text-green-500 mx-2 transition-opacity duration-300 ${
+                      hitAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                    }`}>→</div>
+                    
+                    {/* Result - highlight existing frame */}
+                    <div className={`w-8 h-8 border ${
+                      hitAnimationStep === 3 ? 'border-2 border-green-500 animate-pulse' : 'border-dashed border-gray-600'
+                    } rounded-md flex items-center justify-center transition-all duration-300 ${
+                      hitAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                    }`}>
+                      <span className="cfont-euclid text-xs sm:text-sm text-green-400 font-bold">
+                        {hitAnimationStep === 3 ? 'B' : ''}
+                      </span>
                     </div>
                   </div>
+                </div>
+                {/* Status message */}
+                <div className={`text-center mt-2 text-xs cfont-euclid transition-opacity duration-300 ${
+                  hitAnimationStep === 3 ? 'opacity-100' : 'opacity-0'
+                }`}>
+                  <span className="text-green-400">Page hit: B already exists in memory</span>
                 </div>
               </div>
             </div>
@@ -93,7 +216,7 @@ const About = () => {
         </div>
         
         {/* Why FIFO section */}
-        <div className="opacity-0 slide-from-left slide-delay-2 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full border border-[#3d4f58] shadow-2xl">
+        <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-2 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full border border-[#3d4f58] shadow-2xl">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
             <FileQuestion className="h-5 w-5" />
             Why FIFO?
@@ -122,7 +245,7 @@ const About = () => {
         {/* Historical and Learning sections */}
         <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
           {/* Historical background */}
-          <div className="opacity-0 slide-from-left slide-delay-3 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
+          <div className="opacity-0 transform transition-transform duration-300 hover:-translate-y-1 slide-from-left slide-delay-3 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
             <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
               <History className="h-5 w-5" />
               Historical Background
@@ -136,7 +259,7 @@ const About = () => {
           </div>
           
           {/* Learning Objectives */}
-          <div className="opacity-0 slide-from-left slide-delay-3 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
+          <div className="opacity-0 transform transition-transform duration-300 hover:-translate-y-1 slide-from-left slide-delay-3 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
             <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
               <Target className="h-5 w-5" />
               Learning Objectives
@@ -155,33 +278,33 @@ const About = () => {
         </div>
         
         {/* Glossary section */}
-        <div className="opacity-0 slide-from-left slide-delay-4 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full border border-[#3d4f58] shadow-2xl">
+        <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-4 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full border border-[#3d4f58] shadow-2xl">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
             <BookOpen className="h-5 w-5" />
             Glossary of Terms
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-            <div className="bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
+            <div className="transform transition-transform duration-300 hover:-translate-y-2 bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
               <h3 className="text-xs sm:text-sm cfont-euclid font-medium text-[#71f6ba]">Page</h3>
               <p className="text-xs cfont-euclid text-[#f9fbfa]">A fixed-length block of memory used in virtual memory systems.</p>
             </div>
-            <div className="bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
+            <div className="transform transition-transform duration-300 hover:-translate-y-2 bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
               <h3 className="text-xs sm:text-sm cfont-euclid font-medium text-[#71f6ba]">Frame</h3>
               <p className="text-xs cfont-euclid text-[#f9fbfa]">A slot in physical memory where a page can be loaded.</p>
             </div>
-            <div className="bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
+            <div className="transform transition-transform duration-300 hover:-translate-y-2 bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
               <h3 className="text-xs sm:text-sm cfont-euclid font-medium text-[#71f6ba]">Page Fault</h3>
               <p className="text-xs cfont-euclid text-[#f9fbfa]">When a requested page is not in memory and must be loaded.</p>
             </div>
-            <div className="bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
+            <div className="transform transition-transform duration-300 hover:-translate-y-2 bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
               <h3 className="text-xs sm:text-sm cfont-euclid font-medium text-[#71f6ba]">Reference String</h3>
               <p className="text-xs cfont-euclid text-[#f9fbfa]">A sequence of memory page requests.</p>
             </div>
-            <div className="bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
+            <div className="transform transition-transform duration-300 hover:-translate-y-2 bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
               <h3 className="text-xs sm:text-sm cfont-euclid font-medium text-[#71f6ba]">Hit</h3>
               <p className="text-xs cfont-euclid text-[#f9fbfa]">When the requested page is already in memory.</p>
             </div>
-            <div className="bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
+            <div className="transform transition-transform duration-300 hover:-translate-y-2 bg-[#00162b] p-3 rounded-lg border border-[#3d4f58]">
               <h3 className="text-xs sm:text-sm cfont-euclid font-medium text-[#71f6ba]">Miss</h3>
               <p className="text-xs cfont-euclid text-[#f9fbfa]">When the requested page is not in memory (aka a page fault).</p>
             </div>
@@ -191,7 +314,7 @@ const About = () => {
         {/* Technical and FAQ section */}
         <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
           {/* Tech stack */}
-          <div className="opacity-0 slide-from-left slide-delay-5 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
+          <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-5 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
             <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
               <Wrench className="h-5 w-5" />
               Behind the Scenes
@@ -215,8 +338,8 @@ const About = () => {
             <div>
               <h3 className="text-sm sm:text-base cfont-cooper font-normal mb-2 text-[#f9fbfa]">Personal Note:</h3>
               <p className="text-xs sm:text-sm cfont-euclid text-[#f9fbfa] italic">
-                We built this visualizer as part of a school project, but also because we know how tough it
-                can be to really understand abstract OS concepts like page replacement. We hope this tool
+                I built this visualizer as part of a school project, but also because I know how tough it
+                can be to really understand abstract OS concepts like page replacement. I hope this tool
                 helps other students and self-learners grasp FIFO faster, in a more interactive and visual
                 way.
               </p>
@@ -224,7 +347,7 @@ const About = () => {
           </div>
           
           {/* FAQs */}
-          <div className="opacity-0 slide-from-left slide-delay-5 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
+          <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-5 bg-[#001e2b] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl w-full md:w-1/2">
             <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
               FAQs
