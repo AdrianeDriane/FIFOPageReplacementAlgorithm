@@ -24,7 +24,7 @@ const About = () => {
         }
         return prev >= 3 ? 0 : prev + 1;
       });
-    }, 1000);
+    }, 600);
 
     const hitInterval = setInterval(() => {
       setHitAnimationStep((prev) => {
@@ -39,7 +39,7 @@ const About = () => {
         }
         return prev >= 3 ? 0 : prev + 1;
       });
-    }, 1000);
+    }, 600);
 
     return () => {
       clearInterval(faultInterval);
@@ -57,6 +57,7 @@ const About = () => {
 
   return (
     <div className="flex flex-col items-center justify-center pb-30 sm:pb-30 p-2 sm:p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
+      <title>About | FIFO Page Replacement Algorithm Visualizer</title>
       <h1 className="opacity-0 slide-from-left text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8">
         <Activity className="text-[#71f6ba] h-10 w-10 sm:h-13 sm:w-13" />
         <span className="text-center">About FIFO Page Replacement Algorithm</span>
