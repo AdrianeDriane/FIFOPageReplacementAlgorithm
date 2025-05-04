@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { MouseProvider } from "../providers/mouse/MouseProvider";
 import { DockContext } from "../hooks/useDock";
 import DockItem from "./DockItem";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Home, BookOpen, GitFork, ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Activity } from "lucide-react";
 
 interface DockProps {
@@ -31,6 +31,7 @@ export default function Dock({
   totalSteps
 }: DockProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const ref = useRef<HTMLDivElement | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [width, setWidth] = useState<number | undefined>();
@@ -42,10 +43,26 @@ export default function Dock({
   }, []);
 
   const navigationItems = [
-    { path: "/", icon: <Home size={24} color="#f9fbfa"/>, label: "Home" },
-    { path: "/simulator", icon: <Activity size={24} color="#71f6ba"/>, label: "Simulator" },
-    { path: "/quiz", icon: <BookOpen size={24} color="#f9fbfa"/>, label: "Quiz" },
-    { path: "/flowchart", icon: <GitFork size={24} color="#f9fbfa"/>, label: "Flowchart" },
+    { 
+      path: "/", 
+      icon: <Home size={24} color={location.pathname === "/" ? "#71f6ba" : "#f9fbfa"}/>, 
+      label: "Home" 
+    },
+    { 
+      path: "/simulator", 
+      icon: <Activity size={24} color={location.pathname === "/simulator" ? "#71f6ba" : "#f9fbfa"}/>, 
+      label: "Simulator" 
+    },
+    { 
+      path: "/quiz", 
+      icon: <BookOpen size={24} color={location.pathname === "/quiz" ? "#71f6ba" : "#f9fbfa"}/>, 
+      label: "Quiz" 
+    },
+    { 
+      path: "/flowchart", 
+      icon: <GitFork size={24} color={location.pathname === "/flowchart" ? "#71f6ba" : "#f9fbfa"}/>, 
+      label: "Flowchart" 
+    },
   ];
 
   const controlItems = controlMode === 'manual' ? [
