@@ -77,7 +77,7 @@ const Home = () => {
             
             <button
               onClick={() => navigate('/simulator')}
-              className="group relative overflow-hidden rounded-2xl bg-[#112733] px-4 py-2 ring-1 ring-white/10 transition-all duration-300 hover:ring-[#71f6ba]/50 hover:-translate-y-1"
+              className="group relative cursor-pointer overflow-hidden rounded-2xl bg-[#112733] px-4 py-2 ring-1 ring-white/10 transition-all duration-300 hover:ring-[#71f6ba]/50 hover:-translate-y-1"
             >
               <div className="relative z-10 flex items-center gap-2">
                 <Activity className="h-5 w-5 text-[#71f6ba]" />
@@ -418,7 +418,7 @@ const Home = () => {
           </p>
           <button
             onClick={() => navigate('/simulator')}
-            className="group relative overflow-hidden rounded-2xl bg-[#71f6ba] px-6 py-3 transition-all duration-300 hover:-translate-y-1 hover:bg-[#8fffd4]"
+            className="group relative cursor-pointer overflow-hidden rounded-2xl bg-[#71f6ba] px-6 py-3 transition-all duration-300 hover:-translate-y-1 hover:bg-[#8fffd4]"
           >
             <div className="relative z-10 flex items-center gap-2">
               <Activity className="h-5 w-5 text-[#001e2b]" />
@@ -442,7 +442,6 @@ const Home = () => {
               Racoma, Philipo<br/>
               Dilao, Ralph Adriane<br/>
               Bacocanag, Mark Edzel<br/>
-              
             </p>
           </div>
         </div>
