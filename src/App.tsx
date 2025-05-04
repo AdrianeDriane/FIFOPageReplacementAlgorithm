@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Simulator from './Simulator';
 import Home from './Home';
-import About from './About';
 import Quiz from './Quiz';
 import Flowchart from './Flowchart';
 
@@ -9,7 +9,7 @@ export default function App() {
     <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/simulator" element={<Simulator />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/flowchart" element={<Flowchart />} />
         </Routes>

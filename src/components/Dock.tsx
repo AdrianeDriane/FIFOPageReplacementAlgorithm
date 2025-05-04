@@ -3,7 +3,7 @@ import { MouseProvider } from "../providers/mouse/MouseProvider";
 import { DockContext } from "../hooks/useDock";
 import DockItem from "./DockItem";
 import { useNavigate } from "react-router-dom";
-import { Home, Info, BookOpen, GitFork, ChevronLeft, ChevronRight, Play, Pause, RefreshCw } from "lucide-react";
+import { Home, BookOpen, GitFork, ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Activity } from "lucide-react";
 
 interface DockProps {
   page?: string;
@@ -43,7 +43,7 @@ export default function Dock({
 
   const navigationItems = [
     { path: "/", icon: <Home size={24} color="#f9fbfa"/>, label: "Home" },
-    { path: "/about", icon: <Info size={24} color="#f9fbfa"/>, label: "About" },
+    { path: "/simulator", icon: <Activity size={24} color="#71f6ba"/>, label: "Simulator" },
     { path: "/quiz", icon: <BookOpen size={24} color="#f9fbfa"/>, label: "Quiz" },
     { path: "/flowchart", icon: <GitFork size={24} color="#f9fbfa"/>, label: "Flowchart" },
   ];

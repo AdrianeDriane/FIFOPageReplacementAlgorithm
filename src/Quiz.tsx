@@ -639,7 +639,7 @@ const Quiz = () => {
   return (
     <div className="flex flex-col items-center justify-center pb-30 sm:pb-30 p-2 sm:p-6 mx-auto bg-[#001e2b] min-h-screen cfont-euclid font-mono text-gray-200">
       {/* Header */}
-      <title>Quiz | FIFO Page Replacement Algorithm Visualizer</title>
+      <title>Quiz | FIFO</title>
       {!showIntro && !showResults && (
         <h1 className="opacity-0 slide-from-left text-lg sm:text-xl md:text-2xl cfont-euclid font-normal md:text-center mb-4 sm:mb-6 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3">
           <Brain className="text-[#71f6ba] h-8 w-8" />
