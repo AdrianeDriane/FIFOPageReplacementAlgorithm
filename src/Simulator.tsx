@@ -451,7 +451,7 @@ export default function Simulator() {
           <div className="overflow-hidden">
             <div className="flex flex-nowrap">
               {/* First column - headers */}
-              <div className="flex-none w-16 sm:w-24 gap-2">
+              <div className="flex flex-col w-16 sm:w-24 gap-2">
                 <div className="h-10 sm:h-12 flex items-center">
                   <div className="w-full text-xs sm:text-sm cfont-euclid font-medium text-[#f9fbfa]">
                     Reference
