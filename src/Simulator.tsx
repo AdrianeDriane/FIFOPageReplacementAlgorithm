@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Settings, Award, AlertCircle, CheckCircle, Clock, Activity } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, RefreshCw, Settings, Award, AlertCircle, CheckCircle, Clock, Activity, Info, X } from 'lucide-react';
 import Dock from './components/Dock';
 
 type Page = string | null;
@@ -36,6 +36,70 @@ export default function Simulator() {
   const initialized = useRef(false);
   const configureButtonRef = useRef<HTMLButtonElement>(null);
   const timelineContainerRef = useRef<HTMLDivElement>(null);
+
+  // Tutorial states
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
+  const [tutorialPosition, setTutorialPosition] = useState({ top: 0, left: 0 });
+  const tutorialCardRef = useRef<HTMLDivElement>(null);
+
+  // Define tutorial steps
+  const tutorialSteps = [
+    {
+      target: '.simulator-welcome',
+      title: 'Welcome! 👋',
+      content: 'Welcome to the FIFO Page Replacement Algorithm Simulator! This quick tour will help you understand how to use it.',
+      position: 'bottom'
+    },
+    {
+      target: '.frames-input',
+      title: 'Number of Frames',
+      content: 'Here you specify how many memory frames to use (1-3). This represents the available slots in physical memory.',
+      position: 'right'
+    },
+    {
+      target: '.page-reference-input',
+      title: 'Page Reference Sequence',
+      content: 'Input your sequence of page references using letters A-F, separated by spaces.',
+      position: 'right'
+    },
+    {
+      target: '.statistics-section',
+      title: 'Statistics Panel',
+      content: 'View real-time statistics including hit rates, fault rates, and overall performance metrics.',
+      position: 'left'
+    },
+    {
+      target: '.timeline-section',
+      title: 'Visualization Timeline',
+      content: 'Watch the FIFO algorithm in action with this visual timeline showing how pages are replaced.',
+      position: 'bottom'
+    },
+    {
+      target: '.manual-controls',
+      title: 'Manual Control Mode',
+      content: 'In manual mode, step through the algorithm one page at a time using Previous and Next buttons.',
+      position: 'right'
+    },
+    {
+      target: '.automatic-controls',
+      title: 'Automatic Control Mode',
+      content: 'Switch to automatic mode to watch the algorithm run automatically at different speeds.',
+      position: 'right'
+    },
+    {
+      target: '.dock-controls',
+      title: 'Dock Controls',
+      content: 'You can also control the simulation from this dock at the bottom of the screen.',
+      position: 'top'
+    },
+    {
+      target: '.simulator-welcome',
+      title: "You're All Set! 🎉",
+      content: "Now you're ready to explore and learn about FIFO page replacement algorithm.",
+      position: 'bottom'
+    }
+  ];
 
   const parsePageReferences = () => {
     const allowedLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -253,16 +317,131 @@ export default function Simulator() {
     }
   };
 
+  const calculateTutorialPosition = () => {
+    const targetElement = document.querySelector(tutorialSteps[currentTutorialStep].target) as HTMLElement;
+    if (!targetElement || !tutorialCardRef.current) return;
+
+    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    
+    const targetRect = targetElement.getBoundingClientRect();
+    const cardRect = tutorialCardRef.current.getBoundingClientRect();
+    const position = tutorialSteps[currentTutorialStep].position;
+    
+    // Clear previous highlights
+    clearTutorialHighlights();
+    
+    // Add highlight to current target
+    targetElement.style.position = 'relative';
+    targetElement.style.zIndex = '10';
+    targetElement.style.boxShadow = '0 0 0 2px #71f6ba, 0 0 0 6px rgba(113, 246, 186, 0.2)';
+    targetElement.style.zIndex = '61'
+    
+    let top, left;
+    
+    // Calculate position based on direction
+    switch (position) {
+      case 'top':
+        top = targetRect.top - cardRect.height - 12;
+        left = targetRect.left + (targetRect.width / 2) - (cardRect.width / 2);
+        break;
+      case 'bottom':
+        top = targetRect.bottom + 12;
+        left = targetRect.left + (targetRect.width / 2) - (cardRect.width / 2);
+        break;
+      case 'left':
+        top = targetRect.top + (targetRect.height / 2) - (cardRect.height / 2);
+        left = targetRect.left - cardRect.width - 12;
+        break;
+      case 'right':
+        top = targetRect.top + (targetRect.height / 2) - (cardRect.height / 2);
+        left = targetRect.right + 12;
+        break;
+      default:
+        top = targetRect.bottom + 12;
+        left = targetRect.left + (targetRect.width / 2) - (cardRect.width / 2);
+    }
+    
+    // Viewport boundary checks
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    
+    if (top < 0) top = 12;
+    if (top + cardRect.height > viewportHeight) top = viewportHeight - cardRect.height - 12;
+    if (left < 0) left = 12;
+    if (left + cardRect.width > viewportWidth) left = viewportWidth - cardRect.width - 12;
+    
+    setTutorialPosition({ top, left });
+  };
+
+  const clearTutorialHighlights = () => {
+    document.querySelectorAll('.simulator-welcome, .frames-input, .page-reference-input, .statistics-section, .timeline-section, .manual-controls, .automatic-controls, .dock-controls')
+      .forEach(el => {
+        (el as HTMLElement).style.boxShadow = 'none';
+        (el as HTMLElement).style.zIndex = '';
+      });
+  };
+
+  const handlePrevTutorial = () => {
+    if (currentTutorialStep > 0) {
+      setCurrentTutorialStep(prev => prev - 1);
+    }
+  };
+
+  const handleRestartTutorial = () => {
+    setCurrentTutorialStep(0); // Reset to first step
+    setShowTutorial(true);
+    calculateTutorialPosition(); // Recalculate position for first step
+  };
+
+  const handleNextTutorial = () => {
+    if (currentTutorialStep < tutorialSteps.length - 1) {
+      setCurrentTutorialStep(prev => prev + 1);
+    } else {
+      handleCloseTutorial();
+    }
+  };
+
+  const handleCloseTutorial = () => {
+    clearTutorialHighlights();
+    setShowTutorial(false);
+    localStorage.setItem('hasSeenSimulatorTutorial', 'true');
+  };
+
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenSimulatorTutorial');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showTutorial) {
+      calculateTutorialPosition();
+      const handleResize = () => calculateTutorialPosition();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [currentTutorialStep, showTutorial]);
+
+  useEffect(() => {
+    if (showTutorial) {
+      const handleScroll = () => calculateTutorialPosition();
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [showTutorial, currentTutorialStep]);
+
   return (
     <div className="flex flex-col items-center justify-center pb-30 sm:pb-30 p-2 sm:p-6 mx-auto bg-[#001e2b] min-h-screen font-mono text-gray-200">
       <title>Simulator | FIFO</title>
-      <h1 className="opacity-0 slide-from-left text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8">
+      <h1 className="opacity-0 slide-from-left text-xl sm:text-2xl md:text-3xl cfont-cooper font-normal md:text-center mb-4 sm:mb-8 text-[#f9fbfa] flex flex-col sm:flex-row items-center gap-3 sm:gap-8 simulator-welcome">
         <Activity className="text-[#71f6ba] h-10 w-10 sm:h-13 sm:w-13" />
         <span className="text-center">FIFO Page Replacement Algorithm Visualizer</span>
       </h1>
       
       {/* Visualization Timeline */}
-      <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-1 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-4 sm:mb-8">
+      <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-1 bg-[#001e2b] p-3 sm:p-6 rounded-4xl w-full md:w-[60rem] border border-[#3d4f58] shadow-2xl mb-4 sm:mb-8 timeline-section">
         <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-4 text-[#71f6ba] flex items-center gap-2">
           <Clock className="h-5 w-5" />
           FIFO Visualization Timeline
@@ -439,7 +618,7 @@ export default function Simulator() {
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             Configuration
           </h2>
-          <div className="mt-4 sm:mt-6 mb-3 sm:mb-4">
+          <div className="mt-4 sm:mt-6 mb-3 sm:mb-4 manual-controls automatic-controls">
             <div className="mb-3 sm:mb-4 pl-1 sm:pl-2">
               <div className="text-xs sm:text-sm font-medium cfont-euclid text-[#f9fbfa] mb-2">Control Mode:</div>
               <div className="flex gap-4">
@@ -569,7 +748,7 @@ export default function Simulator() {
             )}
           </div>
           <div className="flex flex-col gap-3 sm:gap-4 pl-1 sm:pl-2 pr-1 sm:pr-2">
-            <div>
+            <div className="frames-input">
               <label className="block text-xs sm:text-sm font-medium cfont-euclid text-[#f9fbfa] mb-1 sm:mb-2">
                 Number of Frames (1-3):
               </label>
@@ -585,7 +764,7 @@ export default function Simulator() {
               )}
             </div>
             
-            <div>
+            <div className="page-reference-input">
               <label className="block text-xs sm:text-sm font-medium cfont-euclid text-[#f9fbfa] mb-1 sm:mb-2">
                 Page Reference Sequence (space-separated letters A-F):
               </label>
@@ -604,7 +783,7 @@ export default function Simulator() {
         </div>
 
         {/* Statistics */}
-        <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-3 bg-[#001e2b] w-full md:w-[40%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl">
+        <div className="transform transition-transform duration-300 hover:-translate-y-1 opacity-0 slide-from-left slide-delay-3 bg-[#001e2b] w-full md:w-[40%] p-3 sm:p-6 rounded-4xl border border-[#3d4f58] shadow-2xl statistics-section">
           <h2 className="text-lg sm:text-xl cfont-cooper font-normal mb-3 sm:mb-4 text-[#71f6ba] flex items-center gap-2">
             <Award className="h-4 w-4 sm:h-5 sm:w-5" />
             Statistics
@@ -713,6 +892,72 @@ export default function Simulator() {
         currentStep={currentStep}
         totalSteps={fifoSteps.length}
       />
+
+      {/* Add restart tutorial button when tutorial is not showing */}
+      {!showTutorial && (
+        <button
+          onClick={handleRestartTutorial}
+          className="fixed right-4 top-4 p-2 bg-[#001e2b] rounded-full border border-[#3d4f58] hover:border-[#71f6ba] transition-colors duration-300 z-50"
+          title="Restart Tutorial"
+        >
+          <Info className="h-5 w-5 text-[#71f6ba]" />
+        </button>
+      )}
+      
+      {/* Tutorial Card */}
+      {showTutorial && (
+        <>
+          <div className="fixed inset-0 z-[60]" onClick={handleCloseTutorial} />
+          <div 
+            ref={tutorialCardRef}
+            className="fixed z-[70] bg-[#001e2b] border border-[#3d4f58] rounded-xl p-4 shadow-lg w-64"
+            style={{ 
+              top: `${tutorialPosition.top}px`, 
+              left: `${tutorialPosition.left}px`,
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-[#71f6ba] cfont-euclid text-sm font-medium">
+                {tutorialSteps[currentTutorialStep].title}
+              </h3>
+              <button 
+                onClick={handleCloseTutorial}
+                className="text-[#f9fbfa] hover:text-[#71f6ba] p-1 rounded-full"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <p className="text-sm cfont-euclid text-[#f9fbfa] mb-4">
+              {tutorialSteps[currentTutorialStep].content}
+            </p>
+            
+            <div className="flex justify-between items-center">
+              <div className="text-xs text-[#f9fbfa]/60">
+                {currentTutorialStep + 1} of {tutorialSteps.length}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handlePrevTutorial}
+                  disabled={currentTutorialStep === 0}
+                  className={`p-1 rounded-full ${
+                    currentTutorialStep === 0 ? 'text-[#3d4f58]' : 'text-[#71f6ba] hover:bg-[#112733]'
+                  }`}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={handleNextTutorial}
+                  className="p-1 rounded-full text-[#71f6ba] hover:bg-[#112733]"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

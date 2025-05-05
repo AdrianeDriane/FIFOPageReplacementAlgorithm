@@ -625,7 +625,7 @@ const Quiz = () => {
             Try Again
           </button>
           <button
-            onClick={() => navigate('/about')}
+            onClick={() => navigate('/')}
             className="flex-1 cursor-pointer p-3 bg-[#71f6ba] hover:bg-[#60e5a9] text-[#001e2b] font-medium cfont-euclid rounded-lg flex items-center justify-center gap-2 transition-colors"
           >
             <ArrowRight className="h-4 w-4" />
